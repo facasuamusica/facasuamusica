@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faça Sua Música — Música personalizada com IA, feita com a história de vocês</title>
+<meta name="description" content="Conte a história, escolha o estilo e receba em minutos uma música personalizada com o nome e os detalhes de quem você ama. Entrega imediata, sem ser músico.">
+<meta property="og:title" content="Faça Sua Música — a música que ela nunca vai esquecer">
+<meta property="og:description" content="Uma música única, com o nome e a história de vocês. Pronta em minutos.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#hero">Pular para o conteúdo</a>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="header">
+  <div class="wrap site-header__inner">
+    <a class="logo" href="#hero">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l11-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="16" r="3" stroke="currentColor" stroke-width="2"/></svg>
+      </span>
+      <span class="logo__text">Faça<strong>Sua</strong>Música</span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Navegação principal">
+      <a href="#amostras">Amostras</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#precos">Preços</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="btn btn--ghost btn--sm hide-mobile" href="#entrar">Entrar</a>
+      <a class="btn btn--primary btn--sm" href="#precos" data-cta="header" data-open-briefing>Criar minha música</a>
+      <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="wrap hero__inner">
+
+    <div class="hero__copy">
+      <p class="eyebrow">
+        <span class="eyebrow__dot" aria-hidden="true"></span>
+        Feito com IA · Entregue em minutos
+      </p>
+
+      <h1 class="hero__title">
+        Uma música feita<br>
+        <em>só pra ela.</em>
+      </h1>
+
+      <p class="hero__sub">
+        Com o nome, a história e as manias de vocês dentro da letra.
+        Você conta o que sente, a gente compõe, canta e entrega.
+        <strong>Sem ser músico. Sem estúdio. Sem esperar semanas.</strong>
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href="#precos" data-cta="hero" data-open-briefing>
+          Criar minha música
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--ghost btn--lg" href="#amostras">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Ouvir amostras
+        </a>
+      </div>
+
+      <ul class="hero__trust">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Pronta em minutos
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Pix, cartão ou boleto
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Compra segura
+        </li>
+      </ul>
+    </div>
+
+    <!-- Player em destaque -->
+    <div class="hero__player">
+      <div class="player-card" data-player-card>
+        <div class="player-card__top">
+          <span class="player-card__badge">Amostra real</span>
+          <span class="player-card__wave" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </span>
+        </div>
+
+        <div class="player-card__art" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l11-2v13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+
+        <h2 class="player-card__title" data-player-title>Pra Sempre Nós</h2>
+        <p class="player-card__meta" data-player-meta>Casamento · Pop romântico · Voz feminina</p>
+
+        <div class="player-card__controls">
+          <button class="play-btn play-btn--lg" data-play="assets/audio/amostra-casamento.mp3"
+                  data-title="Pra Sempre Nós" data-meta="Casamento · Pop romântico · Voz feminina"
+                  aria-label="Tocar amostra">
+            <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+            <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+          </button>
+
+          <div class="player-card__track">
+            <div class="progress" data-progress-wrap>
+              <div class="progress__fill" data-progress-fill></div>
+            </div>
+            <div class="player-card__times">
+              <span data-time-current>0:00</span>
+              <span data-time-total>0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="player-card__lyric">
+          <em>"Foi num setembro qualquer que você chegou / e o meu mundo inteiro aprendeu a cantar…"</em>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prova social -->
+  <div class="wrap">
+    <ul class="stats" aria-label="Números da plataforma">
+      <!-- PLACEHOLDER: troque pelos números reais antes de publicar -->
+      <li><strong data-count="12480">0</strong><span>músicas criadas</span></li>
+      <li><strong data-count="4.9" data-decimals="1" data-suffix="/5">0</strong><span>nota média</span></li>
+      <li><strong data-count="3" data-suffix=" min">0</strong><span>tempo médio de entrega</span></li>
+      <li><strong data-count="98" data-suffix="%">0</strong><span>recomendariam</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ AMOSTRAS ============ -->
+<section class="section" id="amostras">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Ouça antes de comprar</p>
+      <h2 class="section__title">Amostras de verdade, feitas na plataforma</h2>
+      <p class="section__sub">Cada uma nasceu de uma história enviada por um cliente. A sua vai ter o nome, as datas e os detalhes que só vocês dois sabem.</p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Filtrar amostras por ocasião">
+      <button class="tab is-active" role="tab" aria-selected="true" data-filter="todos">Todas</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="amor">Amor</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="casamento">Casamento</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="aniversario">Aniversário</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="familia">Família</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="amizade">Amizade</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="pet">Pet</button>
+    </div>
+
+    <div class="samples" id="samples">
+      <!-- PLACEHOLDER: coloque os MP3 reais em assets/audio/ com estes nomes -->
+      <article class="sample" data-genre="casamento amor">
+        <button class="play-btn" data-play="assets/audio/amostra-casamento.mp3" data-title="Pra Sempre Nós" data-meta="Casamento · Pop romântico · Voz feminina" aria-label="Tocar Pra Sempre Nós">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Pra Sempre Nós</h3>
+          <p>Casamento · Pop romântico</p>
+        </div>
+        <span class="sample__tag">Mais ouvida</span>
+      </article>
+
+      <article class="sample" data-genre="amor">
+        <button class="play-btn" data-play="assets/audio/amostra-amor.mp3" data-title="Meu Lugar é Aí" data-meta="Amor · Sertanejo · Voz masculina" aria-label="Tocar Meu Lugar é Aí">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Meu Lugar é Aí</h3>
+          <p>Amor · Sertanejo</p>
+        </div>
+      </article>
+
+      <article class="sample" data-genre="aniversario">
+        <button class="play-btn" data-play="assets/audio/amostra-aniversario.mp3" data-title="Parabéns, Helena" data-meta="Aniversário · Pop alegre · Voz feminina" aria-label="Tocar Parabéns, Helena">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Parabéns, Helena</h3>
+          <p>Aniversário · Pop alegre</p>
+        </div>
+      </article>
+
+      <article class="sample" data-genre="familia">
+        <button class="play-btn" data-play="assets/audio/amostra-mae.mp3" data-title="Colo de Mãe" data-meta="Família · MPB acústico · Voz masculina" aria-label="Tocar Colo de Mãe">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Colo de Mãe</h3>
+          <p>Família · MPB acústico</p>
+        </div>
+        <span class="sample__tag">Dia das Mães</span>
+      </article>
+
+      <article class="sample" data-genre="amizade">
+        <button class="play-btn" data-play="assets/audio/amostra-amizade.mp3" data-title="Time de Dois" data-meta="Amizade · Pop rock · Voz masculina" aria-label="Tocar Time de Dois">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Time de Dois</h3>
+          <p>Amizade · Pop rock</p>
+        </div>
+      </article>
+
+      <article class="sample" data-genre="pet">
+        <button class="play-btn" data-play="assets/audio/amostra-pet.mp3" data-title="Latido de Amor" data-meta="Pet · Folk divertido · Voz feminina" aria-label="Tocar Latido de Amor">
+          <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <div class="sample__body">
+          <h3>Latido de Amor</h3>
+          <p>Pet · Folk divertido</p>
+        </div>
+      </article>
+    </div>
+
+    <p class="samples__note">
+      Mais de <strong>20 estilos</strong> disponíveis: sertanejo, pagode, MPB, pop, rock, gospel, forró, rap, bossa nova, infantil e muito mais.
+    </p>
+  </div>
+</section>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section class="section section--alt" id="como-funciona">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Simples assim</p>
+      <h2 class="section__title">Da sua história à música pronta em 3 passos</h2>
+      <p class="section__sub">Você não precisa saber nada de música. Só precisa saber o que sente.</p>
+    </header>
+
+    <ol class="steps">
+      <li class="step">
+        <span class="step__num">1</span>
+        <h3>Compre seu crédito</h3>
+        <p>Escolha o pacote, pague no Pix, cartão ou boleto e o crédito cai na sua conta na hora. Cada crédito vale uma música completa.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">2</span>
+        <h3>Conte a história</h3>
+        <p>Um formulário guiado pergunta o nome, a ocasião, as lembranças e o estilo musical. Leva menos de 3 minutos para preencher.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">3</span>
+        <h3>Receba e emocione</h3>
+        <p>Em poucos minutos sua música fica pronta para ouvir, baixar em MP3 e compartilhar com uma página de presente exclusiva.</p>
+      </li>
+    </ol>
+
+    <div class="steps__cta">
+      <a class="btn btn--primary btn--lg" href="#precos" data-cta="como-funciona" data-open-briefing>Quero minha música</a>
+      <span class="steps__cta-note">Crédito liberado na hora após o pagamento</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENEFÍCIOS ============ -->
+<section class="section" id="beneficios">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Por que Faça Sua Música</p>
+      <h2 class="section__title">Um presente que ninguém mais pode dar</h2>
+    </header>
+
+    <div class="cards">
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7.5-4.7-9.3-9.2C1.4 8.4 3.3 5 6.7 5 8.8 5 10.6 6.2 12 8c1.4-1.8 3.2-3 5.3-3 3.4 0 5.3 3.4 4 6.8C19.5 16.3 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Escrita com a história de vocês</h3>
+        <p>Nome, apelido, data que se conheceram, a mania boba que só ela tem. Tudo isso vira letra — não é modelo pronto com o nome trocado.</p>
+      </article>
+
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Pronta em minutos, não em semanas</h3>
+        <p>Compositor humano cobra caro e demora dias. Aqui você ouve o resultado ainda hoje — dá até para fazer em cima da hora.</p>
+      </article>
+
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7ZM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Página de presente com QR Code</h3>
+        <p>Sua música ganha uma página exclusiva com a letra e a capa. Mande o link no WhatsApp ou imprima o QR Code dentro do cartão.</p>
+      </article>
+
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 6v6c0 5 3.4 8.5 8 9.5 4.6-1 8-4.5 8-9.5V6l-8-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Não gostou? Devolvemos</h3>
+        <p>Se a música não te emocionar, você tem 7 dias para pedir reembolso integral. Sem burocracia e sem perguntas chatas.</p>
+      </article>
+
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l11-2v13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="16" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <h3>Mais de 20 estilos musicais</h3>
+        <p>Do sertanejo ao gospel, do pagode ao rock. Escolha a voz, o clima e o gênero que combinam com quem vai receber.</p>
+      </article>
+
+      <article class="card">
+        <span class="card__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <h3>Você no controle da letra</h3>
+        <p>Leu a letra e quis mudar algo? Ajuste os detalhes e gere de novo antes de finalizar. A música sai do jeito que você imaginou.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OCASIÕES ============ -->
+<section class="section section--alt" id="ocasioes">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Para cada momento</p>
+      <h2 class="section__title">Toda história merece uma trilha sonora</h2>
+    </header>
+
+    <ul class="occasions">
+      <li><span aria-hidden="true">💍</span> Pedido de casamento</li>
+      <li><span aria-hidden="true">❤️</span> Declaração de amor</li>
+      <li><span aria-hidden="true">🎂</span> Aniversário</li>
+      <li><span aria-hidden="true">👰</span> Entrada da noiva</li>
+      <li><span aria-hidden="true">🌷</span> Dia das Mães</li>
+      <li><span aria-hidden="true">🧔</span> Dia dos Pais</li>
+      <li><span aria-hidden="true">🎓</span> Formatura</li>
+      <li><span aria-hidden="true">🤝</span> Melhor amigo</li>
+      <li><span aria-hidden="true">🐶</span> Homenagem ao pet</li>
+      <li><span aria-hidden="true">👶</span> Chá de bebê</li>
+      <li><span aria-hidden="true">🕯️</span> Memória de quem se foi</li>
+      <li><span aria-hidden="true">🏢</span> Jingle para empresa</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ PREÇOS ============ -->
+<section class="section" id="precos">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Compra única · Sem mensalidade</p>
+      <h2 class="section__title">Escolha seu pacote de créditos</h2>
+      <p class="section__sub">Cada crédito gera uma música completa. Os créditos não expiram e você usa quando quiser.</p>
+    </header>
+
+    <div class="plans">
+
+      <article class="plan">
+        <h3 class="plan__name">Essencial</h3>
+        <p class="plan__desc">Para um presente só, feito com capricho.</p>
+        <p class="plan__price"><span class="plan__cur">R$</span>47<span class="plan__unit">à vista</span></p>
+        <p class="plan__credits"><strong>1 crédito</strong> · 1 música completa</p>
+        <ul class="plan__list">
+          <li>Música de até 2 minutos</li>
+          <li>Letra personalizada com a sua história</li>
+          <li>Download em MP3 de alta qualidade</li>
+          <li>Página de presente com link</li>
+          <li>Entrega em minutos</li>
+        </ul>
+        <a class="btn btn--ghost btn--block" href="#checkout" data-cta="plano-essencial" data-plan="essencial">Comprar 1 crédito</a>
+      </article>
+
+      <article class="plan plan--featured">
+        <span class="plan__badge">Mais escolhido</span>
+        <h3 class="plan__name">Especial</h3>
+        <p class="plan__desc">Gere versões diferentes e escolha a melhor.</p>
+        <p class="plan__price"><span class="plan__cur">R$</span>87<span class="plan__unit">à vista</span></p>
+        <p class="plan__credits"><strong>3 créditos</strong> · R$ 29 por música</p>
+        <ul class="plan__list">
+          <li>Tudo do Essencial, mais:</li>
+          <li>Música de até 4 minutos</li>
+          <li>Download em MP3 <strong>e WAV</strong></li>
+          <li>Capa personalizada com foto</li>
+          <li>Página de presente com <strong>QR Code</strong></li>
+          <li>Suporte prioritário no WhatsApp</li>
+        </ul>
+        <a class="btn btn--primary btn--block" href="#checkout" data-cta="plano-especial" data-plan="especial">Comprar 3 créditos</a>
+      </article>
+
+      <article class="plan">
+        <h3 class="plan__name">Eterno</h3>
+        <p class="plan__desc">Para quem quer presentear a família inteira.</p>
+        <p class="plan__price"><span class="plan__cur">R$</span>147<span class="plan__unit">à vista</span></p>
+        <p class="plan__credits"><strong>7 créditos</strong> · R$ 21 por música</p>
+        <ul class="plan__list">
+          <li>Tudo do Especial, mais:</li>
+          <li><strong>Vídeo lyric</strong> pronto para postar</li>
+          <li>Versão instrumental (playback)</li>
+          <li>Uso comercial liberado</li>
+          <li>Revisão assistida da letra</li>
+        </ul>
+        <a class="btn btn--ghost btn--block" href="#checkout" data-cta="plano-eterno" data-plan="eterno">Comprar 7 créditos</a>
+      </article>
+
+    </div>
+
+    <div class="guarantee">
+      <span class="guarantee__ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 6v6c0 5 3.4 8.5 8 9.5 4.6-1 8-4.5 8-9.5V6l-8-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <div>
+        <h3>Garantia incondicional de 7 dias</h3>
+        <p>Ouviu e não se emocionou? Escreve pra gente que devolvemos 100% do valor. O risco é todo nosso.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEPOIMENTOS ============ -->
+<section class="section section--alt" id="depoimentos">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Quem já emocionou</p>
+      <h2 class="section__title">Histórias que viraram música</h2>
+    </header>
+
+    <!-- PLACEHOLDER: substitua por depoimentos reais com autorização de uso -->
+    <div class="testimonials">
+      <figure class="testimonial">
+        <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote>Toquei na hora da entrada da noiva e não teve um olho seco na igreja. Minha mãe até hoje escuta todo domingo.</blockquote>
+        <figcaption><strong>Rafael M.</strong><span>Casamento · Belo Horizonte</span></figcaption>
+      </figure>
+
+      <figure class="testimonial">
+        <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote>Fiz pro aniversário de 60 anos da minha mãe. Ela chorou, pediu pra repetir três vezes e mandou pra família inteira no zap.</blockquote>
+        <figcaption><strong>Camila S.</strong><span>Aniversário · Curitiba</span></figcaption>
+      </figure>
+
+      <figure class="testimonial">
+        <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote>Achei que ia sair genérico, mas a letra citou o nosso primeiro encontro e o apelido dela. Melhor R$ 87 que gastei.</blockquote>
+        <figcaption><strong>Diego A.</strong><span>Namoro · São Paulo</span></figcaption>
+      </figure>
+
+      <figure class="testimonial">
+        <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote>Perdi meu pai ano passado e fiz uma música com as histórias dele. Virou a lembrança mais bonita que a gente tem.</blockquote>
+        <figcaption><strong>Luciana P.</strong><span>Homenagem · Recife</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="wrap wrap--narrow">
+    <header class="section__head">
+      <p class="eyebrow">Tirando dúvidas</p>
+      <h2 class="section__title">Perguntas frequentes</h2>
+    </header>
+
+    <div class="faq">
+      <details class="faq__item">
+        <summary>Quanto tempo leva para receber a música?</summary>
+        <div class="faq__body"><p>Na maioria dos casos a música fica pronta em 3 a 5 minutos após você enviar a história. Em horários de pico pode chegar a 15 minutos. Você recebe um aviso por e-mail assim que ficar pronta.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Como funciona o sistema de créditos?</summary>
+        <div class="faq__body"><p>Cada crédito gera uma música completa. Ao pagar, os créditos entram na sua conta imediatamente e ficam disponíveis para usar quando quiser — eles não expiram. Se você tem 3 créditos, pode gerar 3 versões diferentes e escolher a que mais gostou.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Preciso saber escrever letra ou entender de música?</summary>
+        <div class="faq__body"><p>Não. O formulário faz as perguntas certas: para quem é, a ocasião, algumas lembranças e o estilo musical. A partir das suas respostas, nós escrevemos a letra e produzimos a música inteira.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Posso pedir alterações na letra?</summary>
+        <div class="faq__body"><p>Sim. Antes de gerar o áudio você revisa a letra e pode ajustar os detalhes que quiser. No plano Eterno, nossa equipe ainda faz uma revisão assistida junto com você.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Em quais estilos e idiomas vocês fazem?</summary>
+        <div class="faq__body"><p>Mais de 20 estilos — sertanejo, pagode, MPB, pop, rock, gospel, forró, rap, bossa nova, infantil, entre outros — com voz masculina ou feminina. Produzimos em português, inglês e espanhol.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>A música é minha? Posso usar em vídeo ou evento?</summary>
+        <div class="faq__body"><p>A música é exclusiva sua e não é vendida para mais ninguém. Você pode usar livremente em usos pessoais: presente, festa, casamento, redes sociais. Para uso comercial (anúncio, jingle, monetização), escolha o plano Eterno, que já inclui essa liberação.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Quais formas de pagamento vocês aceitam?</summary>
+        <div class="faq__body"><p>Pix (liberação imediata), cartão de crédito em até 12x e boleto bancário. O pagamento é processado pelo Mercado Pago, com ambiente seguro e criptografado.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary>E se eu não gostar do resultado?</summary>
+        <div class="faq__body"><p>Você tem 7 dias para pedir o reembolso integral, sem precisar justificar. Basta falar com a gente pelo WhatsApp ou e-mail e devolvemos o valor.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="final-cta" id="checkout">
+  <div class="wrap final-cta__inner">
+    <h2>Ela vai lembrar dessa música pra sempre.</h2>
+    <p>Enquanto você lê isso, dá tempo de criar. Sua música fica pronta antes do café esfriar.</p>
+    <a class="btn btn--primary btn--lg" href="#precos" data-cta="final" data-open-briefing>Criar minha música agora</a>
+    <p class="final-cta__note">Compra segura · Pix, cartão ou boleto · Créditos que não expiram</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__brand">
+      <a class="logo" href="#hero">
+        <span class="logo__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l11-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="16" r="3" stroke="currentColor" stroke-width="2"/></svg>
+        </span>
+        <span class="logo__text">Faça<strong>Sua</strong>Música</span>
+      </a>
+      <p>Músicas personalizadas criadas com inteligência artificial a partir da sua história.</p>
+    </div>
+
+    <nav class="site-footer__col" aria-label="Institucional">
+      <h3>Plataforma</h3>
+      <a href="#amostras">Amostras</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#precos">Preços</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+
+    <nav class="site-footer__col" aria-label="Legal">
+      <h3>Legal</h3>
+      <a href="#termos">Termos de uso</a>
+      <a href="#privacidade">Política de privacidade</a>
+      <a href="#reembolso">Política de reembolso</a>
+    </nav>
+
+    <div class="site-footer__col">
+      <h3>Contato</h3>
+      <!-- PLACEHOLDER: troque pelos dados reais -->
+      <a href="#whatsapp">WhatsApp</a>
+      <a href="mailto:contato@facasuamusica.com.br">contato@facasuamusica.com.br</a>
+    </div>
+  </div>
+
+  <div class="wrap site-footer__bottom">
+    <p>© <span data-year></span> Faça Sua Música. Todos os direitos reservados.</p>
+    <p class="site-footer__cnpj">CNPJ 00.000.000/0001-00</p>
+  </div>
+</footer>
+
+<!-- Barra fixa mobile -->
+<div class="sticky-cta" id="stickyCta" hidden>
+  <div class="sticky-cta__info">
+    <strong>A partir de R$ 47</strong>
+    <span>Pronta em minutos</span>
+  </div>
+  <a class="btn btn--primary" href="#precos" data-cta="sticky" data-open-briefing>Criar música</a>
+</div>
+
+<!-- ============ BRIEFING (formulário multi-etapas) ============ -->
+<div class="modal" id="briefing" hidden>
+  <div class="modal__backdrop" data-close-briefing></div>
+
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="briefingTitle">
+    <header class="modal__head">
+      <div class="modal__head-text">
+        <p class="modal__step">Passo <span data-step-current>1</span> de <span data-step-total>6</span></p>
+        <h2 id="briefingTitle" data-step-title>Qual é a ocasião?</h2>
+      </div>
+      <button class="modal__close" type="button" data-close-briefing aria-label="Fechar formulário">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <div class="modal__progress"><span data-step-progress></span></div>
+
+    <form class="modal__body" id="briefingForm" novalidate>
+
+      <!-- 1. ocasião -->
+      <fieldset class="step-panel is-active" data-step="1" data-title="Qual é a ocasião?">
+        <legend class="sr-only">Ocasião</legend>
+        <p class="step-panel__hint">Isso define o tom da letra e o clima da música.</p>
+        <div class="chips" data-required="ocasiao">
+          <label class="chip"><input type="radio" name="ocasiao" value="Declaração de amor"><span>❤️ Declaração de amor</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Pedido de casamento"><span>💍 Pedido de casamento</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Casamento"><span>👰 Casamento</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Aniversário"><span>🎂 Aniversário</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Dia das Mães"><span>🌷 Dia das Mães</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Dia dos Pais"><span>🧔 Dia dos Pais</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Amizade"><span>🤝 Amizade</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Homenagem ao pet"><span>🐶 Homenagem ao pet</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Formatura"><span>🎓 Formatura</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Memória de quem se foi"><span>🕯️ Memória de quem se foi</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Nascimento"><span>👶 Nascimento</span></label>
+          <label class="chip"><input type="radio" name="ocasiao" value="Empresa / jingle"><span>🏢 Empresa / jingle</span></label>
+        </div>
+      </fieldset>
+
+      <!-- 2. para quem -->
+      <fieldset class="step-panel" data-step="2" data-title="Para quem é essa música?">
+        <legend class="sr-only">Destinatário</legend>
+        <p class="step-panel__hint">O nome vai aparecer cantado na letra.</p>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field__label">Nome de quem vai receber *</span>
+            <input type="text" name="destinatario" placeholder="Ex.: Helena" autocomplete="off" required>
+          </label>
+          <label class="field">
+            <span class="field__label">Apelido carinhoso</span>
+            <input type="text" name="apelido" placeholder="Ex.: Lelê" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field__label">Seu nome *</span>
+            <input type="text" name="remetente" placeholder="Ex.: Rafael" autocomplete="off" required>
+          </label>
+          <label class="field">
+            <span class="field__label">O que ela(e) é sua? *</span>
+            <select name="relacao" required>
+              <option value="">Selecione…</option>
+              <option>Namorada(o)</option>
+              <option>Esposa / Marido</option>
+              <option>Noiva(o)</option>
+              <option>Mãe</option>
+              <option>Pai</option>
+              <option>Filha(o)</option>
+              <option>Amiga(o)</option>
+              <option>Irmã(o)</option>
+              <option>Avó / Avô</option>
+              <option>Pet</option>
+              <option>Outro</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 3. história -->
+      <fieldset class="step-panel" data-step="3" data-title="Conte a história de vocês">
+        <legend class="sr-only">História</legend>
+        <p class="step-panel__hint">Quanto mais detalhe, mais a música vai parecer feita à mão. Escreva do seu jeito, sem se preocupar com rima.</p>
+        <label class="field">
+          <span class="field__label">Uma lembrança que vocês dois nunca esquecem *</span>
+          <textarea name="historia" rows="5" required minlength="25"
+            placeholder="Ex.: A gente se conheceu numa fila de padaria em 2019. Ela riu do meu jeito de pedir pão e a gente nunca mais se desgrudou. Todo domingo a gente repete esse café da manhã."></textarea>
+          <span class="field__counter"><span data-counter-for="historia">0</span> caracteres</span>
+        </label>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field__label">Data especial</span>
+            <input type="text" name="data" placeholder="Ex.: 14 de março de 2019" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field__label">Um lugar que marcou</span>
+            <input type="text" name="lugar" placeholder="Ex.: praia de Maresias" autocomplete="off">
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 4. estilo -->
+      <fieldset class="step-panel" data-step="4" data-title="Como você quer que soe?">
+        <legend class="sr-only">Estilo musical</legend>
+
+        <p class="field__label field__label--block">Estilo musical *</p>
+        <div class="chips chips--sm" data-required="genero">
+          <label class="chip"><input type="radio" name="genero" value="Sertanejo"><span>Sertanejo</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Pop romântico"><span>Pop romântico</span></label>
+          <label class="chip"><input type="radio" name="genero" value="MPB acústico"><span>MPB acústico</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Pagode"><span>Pagode</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Forró"><span>Forró</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Gospel"><span>Gospel</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Rock"><span>Rock</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Rap"><span>Rap</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Bossa nova"><span>Bossa nova</span></label>
+          <label class="chip"><input type="radio" name="genero" value="Infantil"><span>Infantil</span></label>
+        </div>
+
+        <p class="field__label field__label--block">Voz *</p>
+        <div class="chips chips--sm" data-required="voz">
+          <label class="chip"><input type="radio" name="voz" value="Feminina"><span>Feminina</span></label>
+          <label class="chip"><input type="radio" name="voz" value="Masculina"><span>Masculina</span></label>
+          <label class="chip"><input type="radio" name="voz" value="Tanto faz"><span>Tanto faz</span></label>
+        </div>
+
+        <p class="field__label field__label--block">Clima</p>
+        <div class="chips chips--sm">
+          <label class="chip"><input type="radio" name="clima" value="Emocionante"><span>Emocionante</span></label>
+          <label class="chip"><input type="radio" name="clima" value="Alegre"><span>Alegre</span></label>
+          <label class="chip"><input type="radio" name="clima" value="Romântico"><span>Romântico</span></label>
+          <label class="chip"><input type="radio" name="clima" value="Divertido"><span>Divertido</span></label>
+          <label class="chip"><input type="radio" name="clima" value="Nostálgico"><span>Nostálgico</span></label>
+        </div>
+      </fieldset>
+
+      <!-- 5. detalhes -->
+      <fieldset class="step-panel" data-step="5" data-title="Últimos detalhes">
+        <legend class="sr-only">Detalhes finais</legend>
+        <p class="step-panel__hint">Opcional, mas é aqui que a música ganha as digitais de vocês.</p>
+        <label class="field">
+          <span class="field__label">Palavras ou frases que não podem faltar</span>
+          <textarea name="obrigatorio" rows="3" placeholder="Ex.: 'minha paz', o bordão 'bora que bora', o nome do cachorro Tufão"></textarea>
+        </label>
+        <label class="field">
+          <span class="field__label">Algo que a música deve evitar</span>
+          <input type="text" name="evitar" placeholder="Ex.: não citar o ex, nada sobre trabalho" autocomplete="off">
+        </label>
+      </fieldset>
+
+      <!-- 6. contato -->
+      <fieldset class="step-panel" data-step="6" data-title="Para onde enviamos?">
+        <legend class="sr-only">Contato</legend>
+        <p class="step-panel__hint">Avisamos assim que a música ficar pronta.</p>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field__label">Seu e-mail *</span>
+            <input type="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span class="field__label">WhatsApp</span>
+            <input type="tel" name="whatsapp" placeholder="(11) 99999-9999" autocomplete="tel">
+          </label>
+        </div>
+
+        <div class="review" data-review>
+          <h3>Resumo do seu pedido</h3>
+          <dl data-review-list></dl>
+        </div>
+      </fieldset>
+
+    </form>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-step-back>Voltar</button>
+      <button type="button" class="btn btn--primary" data-step-next>Continuar</button>
+    </footer>
+  </div>
+</div>
+
+<audio id="audio" preload="none"></audio>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
