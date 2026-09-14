@@ -1,9 +1,11 @@
 {
   "name": "facasuamusica",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "test": "node test/mureka.test.mjs"
   },
   "devDependencies": {
     "wrangler": "^4"
