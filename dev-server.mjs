@@ -35,18 +35,32 @@ createServer(async (req, res) => {
     return;
   }
 
-  try {
-    const file = join(ROOT, relative);
-    const body = await readFile(file);
+  // Como no Cloudflare, um caminho sem extensao (/site) cai no index.html do
+  // diretorio correspondente.
+  const candidates = extname(relative)
+    ? [relative]
+    : [join(relative, 'index.html'), `${relative}.html`];
+
+  for (const candidate of candidates) {
+    const file = join(ROOT, candidate);
+    let body;
+
+    try {
+      body = await readFile(file);
+    } catch {
+      continue;
+    }
+
     res.writeHead(200, {
       'Content-Type': TYPES[extname(file).toLowerCase()] || 'application/octet-stream',
       'Cache-Control': 'no-store'
     });
     res.end(body);
-  } catch {
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end(`404 - ${path}`);
+    return;
   }
+
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end(`404 - ${path}`);
 }).listen(PORT, () => {
   console.log(`Servindo public/ em http://localhost:${PORT}`);
 });

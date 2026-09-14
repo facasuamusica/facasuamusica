@@ -1,0 +1,3 @@
+# O site ainda nao foi lancado: a previa em /site fica fora da busca.
+User-agent: *
+Disallow: /site
