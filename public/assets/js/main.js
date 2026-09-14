@@ -177,7 +177,7 @@
      Varredura no scroll em vez de IntersectionObserver: links âncora podem
      pular seções inteiras, e um observer nunca reporta quem não chegou a
      cruzar a viewport — essas seções ficariam invisíveis para sempre. */
-  var revealTargets = $$('.section__head, .step, .card, .plan, .testimonial, .player-card, .guarantee, .faq__item, .final-cta__inner');
+  var revealTargets = $$('.section__head, .step, .card, .plan, .testimonial, .player-card, .faq__item, .final-cta__inner');
   revealTargets.forEach(function (el) { el.setAttribute('data-reveal', ''); });
 
   var pending = revealTargets.slice();

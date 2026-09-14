@@ -386,16 +386,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .plan__list strong { color: var(--text); }
 
-.guarantee {
-  display: flex; align-items: center; gap: 20px;
-  max-width: 760px; margin: 48px auto 0; padding: 26px 30px;
-  background: var(--grad-soft); border: 1px solid var(--line); border-radius: var(--radius-lg);
-}
-.guarantee__ico { flex: none; display: grid; place-items: center; width: 52px; height: 52px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; color: var(--brand-2); }
-.guarantee__ico svg { width: 26px; height: 26px; }
-.guarantee h3 { font-size: 18px; margin-bottom: 6px; }
-.guarantee p { font-size: 15px; color: var(--text-soft); }
-
 /* ---------- depoimentos ---------- */
 .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
 .testimonial {
@@ -604,7 +594,6 @@ body.is-locked { overflow: hidden; }
   .sticky-cta { display: flex; }
   body { padding-bottom: 0; }
   .samples { grid-template-columns: 1fr; }
-  .guarantee { flex-direction: column; text-align: center; }
   .site-footer__inner { grid-template-columns: 1fr; gap: 28px; }
   .player-card { padding: 20px; }
   .player-card__lyric { font-size: 14.5px; }
