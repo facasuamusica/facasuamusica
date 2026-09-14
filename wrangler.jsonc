@@ -3,6 +3,10 @@
   "name": "facasuamusica",
   "main": "src/index.js",
   "compatibility_date": "2026-09-01",
+  "routes": [
+    { "pattern": "facasuamusica.com.br", "custom_domain": true },
+    { "pattern": "www.facasuamusica.com.br", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
