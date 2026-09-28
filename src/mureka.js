@@ -125,7 +125,7 @@ export async function gerarLetra(env, prompt) {
  * Abre a tarefa assincrona de geracao da musica. A letra e obrigatoria; o
  * prompt descreve estilo, andamento e timbre ("mpb, romantica, voz feminina").
  */
-export async function gerarMusica(env, { letra, estilo, voz, modelo, quantidade = 2 }) {
+export async function gerarMusica(env, { letra, estilo, voz, modelo }) {
   if (!letra?.trim()) {
     throw new MurekaError('A letra e obrigatoria para gerar a musica.', 400);
   }
@@ -146,11 +146,11 @@ export async function gerarMusica(env, { letra, estilo, voz, modelo, quantidade 
     throw new MurekaError('Voz invalida. Use "female" ou "male".', 400);
   }
 
-  // A Mureka cobra por musica gerada, entao o teto de 3 do fornecedor fica
-  // limitado a 2 aqui para o custo por pedido nao escapar.
-  const n = Math.min(Math.max(Number(quantidade) || 2, 1), 2);
-
-  const corpo = { lyrics: letra, model: modelo || MODELO_PADRAO, n };
+  // Uma musica por pedido, por decisao de produto: entrega mais rapida e o
+  // cliente nao precisa escolher entre versoes. O teto de 3 do fornecedor nao
+  // e usado, e a quantidade nao e configuravel pelo cliente — senao bastaria
+  // pedir n alto para multiplicar o consumo de credito da conta.
+  const corpo = { lyrics: letra, model: modelo || MODELO_PADRAO, n: 1 };
   if (estilo) corpo.prompt = estilo;
   if (voz) corpo.gender = voz;
 

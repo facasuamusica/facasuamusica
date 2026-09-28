@@ -78,7 +78,7 @@ checa('envia Authorization Bearer', ultimaChamada.init.headers.Authorization ===
 checa('mapeia letra->lyrics e estilo->prompt', enviado.lyrics === '[Verse]\nOi' && enviado.prompt === 'mpb romantica');
 checa('mapeia voz->gender', enviado.gender === 'female');
 checa('modelo padrao auto', enviado.model === 'auto');
-checa('limita quantidade a 2', enviado.n === 2, `n=${enviado.n}`);
+checa('gera sempre 1 musica, ignorando quantidade pedida', enviado.n === 1, `n=${enviado.n}`);
 
 // --- consulta concluida ---
 console.log('\nConsulta');
