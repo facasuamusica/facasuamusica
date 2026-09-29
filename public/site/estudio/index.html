@@ -143,7 +143,16 @@ function token() {
 // Reserva para quando sessionStorage estiver bloqueado (navegacao privada).
 let janelaToken = '';
 
+// Aberta como arquivo local (file://), a pagina nao tem servidor de origem e
+// qualquer chamada a /api/ falha com um erro cru do navegador. Melhor dizer o
+// que fazer do que deixar o erro aparecer.
+const servida = location.protocol === 'http:' || location.protocol === 'https:';
+
 async function api(caminho, opcoes = {}) {
+  if (!servida) {
+    throw new Error('Abra pelo endereco https://facasuamusica.com.br/site/estudio — esta pagina nao funciona aberta como arquivo do computador.');
+  }
+
   const resposta = await fetch(caminho, {
     ...opcoes,
     headers: {
@@ -309,6 +318,12 @@ try {
   const guardado = sessionStorage.getItem(CHAVE);
   if (guardado) { $('token').value = guardado; }
 } catch {}
+
+if (!servida) {
+  avisar($('avisoAcesso'),
+    'Esta pagina foi aberta como arquivo do computador e nao consegue falar com o servidor. Abra https://facasuamusica.com.br/site/estudio', 'erro');
+  $('btEntrar').disabled = true;
+}
 </script>
 </body>
 </html>
