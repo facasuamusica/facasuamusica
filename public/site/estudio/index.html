@@ -167,9 +167,42 @@ async function api(caminho, opcoes = {}) {
 
   if (!resposta.ok) {
     const msg = dados.error || ('Erro HTTP ' + resposta.status);
-    throw new Error(resposta.status === 401 ? 'Token recusado. Confira se colou o token certo.' : msg);
+
+    if (resposta.status === 401) {
+      throw new Error('Token recusado. Confira se colou o token certo.');
+    }
+    // O credito de API da Mureka e separado do plano do site: da para ter
+    // assinatura ativa e ainda assim nao ter cota aqui.
+    if (/quota|billing details/i.test(msg)) {
+      throw new Error('A conta Mureka esta sem cota de API. Compre credito de API no painel da Mureka (e separado do plano do site).');
+    }
+    throw new Error(msg);
   }
   return dados;
+}
+
+// A Mureka nao documenta os campos de /account/billing, entao em vez de
+// depender de um nome fixo, procuramos os campos numericos que falam de saldo
+// e mostramos o resto cru — assim nada fica escondido se eles mudarem o nome.
+const CAMPOS_SALDO = /saldo|balance|credit|quota|remain|available/i;
+
+function camposDeSaldo(conta) {
+  return Object.entries(conta || {})
+    .filter(([nome, valor]) => typeof valor === 'number' && CAMPOS_SALDO.test(nome));
+}
+
+function temCota(conta) {
+  const campos = camposDeSaldo(conta);
+  // Sem campo reconhecivel nao da para afirmar que falta cota.
+  return campos.length === 0 || campos.some(([, valor]) => valor > 0);
+}
+
+function resumirConta(conta) {
+  const campos = camposDeSaldo(conta);
+  if (campos.length === 0) return 'A Mureka nao informou saldo nesta resposta.';
+
+  const texto = campos.map(([nome, valor]) => nome + ': ' + valor).join(' · ');
+  return campos.some(([, v]) => v > 0) ? ('Saldo — ' + texto) : ('Sem saldo — ' + texto);
 }
 
 // ---------- acesso ----------
@@ -182,8 +215,8 @@ $('btEntrar').onclick = async () => {
 
   avisar($('avisoAcesso'), 'Conferindo...', 'info');
   try {
-    await api('/api/saldo');
-    avisar($('avisoAcesso'), 'Acesso liberado.', 'ok');
+    const conta = await api('/api/saldo');
+    avisar($('avisoAcesso'), 'Acesso liberado. ' + resumirConta(conta), temCota(conta) ? 'ok' : 'erro');
     $('painel').classList.remove('oculto');
     $('token').disabled = true;
     $('btEntrar').disabled = true;
