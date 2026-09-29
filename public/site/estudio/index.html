@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Estúdio de testes — Faça Sua Música</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0b0711; --surface:#191026; --surface-2:#21162f; --line:#2e2140;
+    --text:#f4eefb; --text-soft:#b9a9cc; --text-dim:#8b7aa0;
+    --brand:#ff5d8f; --brand-2:#ffb057; --brand-3:#a06bff;
+    --grad:linear-gradient(115deg,#ff5d8f 0%,#ff7a6b 45%,#ffb057 100%);
+    --ok:#4ade80; --erro:#ff6b6b;
+    --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-display:'Fraunces',Georgia,serif;
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; padding:32px 20px 80px; background:var(--bg); color:var(--text);
+    font-family:var(--font); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:720px; margin:0 auto; }
+  h1 { font-family:var(--font-display); font-size:clamp(1.6rem,5vw,2.2rem); margin:0 0 6px; letter-spacing:-.02em; }
+  .sub { color:var(--text-dim); font-size:14.5px; margin:0 0 32px; }
+
+  fieldset { border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:22px; margin:0 0 20px; }
+  legend { padding:0 10px; font-weight:700; font-size:14px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.06em; }
+
+  label { display:block; font-size:14px; font-weight:600; margin:16px 0 6px; }
+  label:first-of-type { margin-top:0; }
+  .dica { font-weight:400; color:var(--text-dim); font-size:13px; }
+
+  input, textarea, select {
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px;
+    background:var(--surface-2); color:var(--text); font:inherit; font-size:15px;
+  }
+  textarea { resize:vertical; min-height:110px; line-height:1.55; }
+  input:focus, textarea:focus, select:focus { outline:2px solid var(--brand); outline-offset:1px; border-color:transparent; }
+
+  .linha { display:flex; gap:14px; flex-wrap:wrap; }
+  .linha > div { flex:1 1 200px; }
+
+  button {
+    font:inherit; font-weight:700; font-size:15px; cursor:pointer;
+    padding:12px 22px; border:0; border-radius:999px;
+    background:var(--grad); color:#2a0c18; margin-top:18px;
+  }
+  button.secundario { background:transparent; border:1px solid var(--line); color:var(--text-soft); }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+
+  .aviso { margin-top:14px; padding:12px 14px; border-radius:10px; font-size:14px; display:none; }
+  .aviso.erro { display:block; background:rgba(255,107,107,.1); border:1px solid rgba(255,107,107,.35); color:#ffb3b3; }
+  .aviso.ok   { display:block; background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.3); color:#a7f3c4; }
+  .aviso.info { display:block; background:rgba(160,107,255,.1); border:1px solid rgba(160,107,255,.3); color:var(--text-soft); }
+
+  audio { width:100%; margin-top:18px; }
+  .baixar { display:inline-block; margin-top:12px; color:var(--brand); font-weight:600; font-size:14px; }
+
+  .oculto { display:none; }
+  .pulso { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--brand-2); margin-right:8px; animation:p 1s ease-in-out infinite; }
+  @keyframes p { 0%,100%{opacity:.25} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce) { .pulso { animation:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Estúdio de testes</h1>
+  <p class="sub">Uso interno. Cada música gerada consome crédito da conta Mureka.</p>
+
+  <fieldset>
+    <legend>Acesso</legend>
+    <label for="token">Token de acesso <span class="dica">— fica só neste navegador, nesta aba</span></label>
+    <input id="token" type="password" autocomplete="off" placeholder="cole seu APP_ACCESS_TOKEN">
+    <button id="btEntrar">Entrar</button>
+    <div id="avisoAcesso" class="aviso"></div>
+  </fieldset>
+
+  <div id="painel" class="oculto">
+
+    <fieldset>
+      <legend>1 · A história</legend>
+      <label for="briefing">Para quem é a música, e o que ela precisa dizer?</label>
+      <textarea id="briefing" placeholder="Ex.: para minha mãe, Dona Marli, 70 anos, que faz bolo de fubá e canta no coral da igreja. Ela criou três filhos sozinha e nunca reclamou."></textarea>
+
+      <div class="linha">
+        <div>
+          <label for="estilo">Estilo <span class="dica">(em inglês funciona melhor)</span></label>
+          <input id="estilo" value="brazilian mpb, acoustic guitar, warm, emotional" placeholder="mpb, slow, emotional">
+        </div>
+        <div>
+          <label for="voz">Voz</label>
+          <select id="voz">
+            <option value="">Deixar a IA escolher</option>
+            <option value="female">Feminina</option>
+            <option value="male">Masculina</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btLetra">Gerar letra</button>
+      <button id="btPularLetra" class="secundario">Escrever a letra eu mesma</button>
+      <div id="avisoLetra" class="aviso"></div>
+    </fieldset>
+
+    <fieldset id="blocoLetra" class="oculto">
+      <legend>2 · A letra</legend>
+      <label for="titulo">Título</label>
+      <input id="titulo" placeholder="título da música">
+      <label for="letra">Letra <span class="dica">— pode editar à vontade antes de gerar</span></label>
+      <textarea id="letra" style="min-height:260px" placeholder="[Verse]&#10;..."></textarea>
+
+      <button id="btMusica">Gerar música · consome 1 crédito</button>
+      <div id="avisoMusica" class="aviso"></div>
+    </fieldset>
+
+    <fieldset id="blocoResultado" class="oculto">
+      <legend>3 · Resultado</legend>
+      <div id="resultado"></div>
+    </fieldset>
+
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const CHAVE = 'fsm_token';
+
+function avisar(el, texto, tipo = 'info') {
+  el.className = 'aviso ' + tipo;
+  el.textContent = texto;
+}
+function limpar(el) { el.className = 'aviso'; el.textContent = ''; }
+
+function token() {
+  try { return sessionStorage.getItem(CHAVE) || ''; } catch { return janelaToken; }
+}
+// Reserva para quando sessionStorage estiver bloqueado (navegacao privada).
+let janelaToken = '';
+
+async function api(caminho, opcoes = {}) {
+  const resposta = await fetch(caminho, {
+    ...opcoes,
+    headers: {
+      'Authorization': 'Bearer ' + token(),
+      ...(opcoes.body ? { 'Content-Type': 'application/json' } : {}),
+      ...opcoes.headers
+    }
+  });
+
+  let dados = {};
+  try { dados = await resposta.json(); } catch {}
+
+  if (!resposta.ok) {
+    const msg = dados.error || ('Erro HTTP ' + resposta.status);
+    throw new Error(resposta.status === 401 ? 'Token recusado. Confira se colou o token certo.' : msg);
+  }
+  return dados;
+}
+
+// ---------- acesso ----------
+$('btEntrar').onclick = async () => {
+  const valor = $('token').value.trim();
+  if (!valor) { avisar($('avisoAcesso'), 'Cole o token primeiro.', 'erro'); return; }
+
+  janelaToken = valor;
+  try { sessionStorage.setItem(CHAVE, valor); } catch {}
+
+  avisar($('avisoAcesso'), 'Conferindo...', 'info');
+  try {
+    await api('/api/saldo');
+    avisar($('avisoAcesso'), 'Acesso liberado.', 'ok');
+    $('painel').classList.remove('oculto');
+    $('token').disabled = true;
+    $('btEntrar').disabled = true;
+  } catch (erro) {
+    avisar($('avisoAcesso'), erro.message, 'erro');
+  }
+};
+
+$('token').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btEntrar').click(); });
+
+// ---------- letra ----------
+$('btLetra').onclick = async () => {
+  const briefing = $('briefing').value.trim();
+  if (!briefing) { avisar($('avisoLetra'), 'Conte a história primeiro.', 'erro'); return; }
+
+  $('btLetra').disabled = true;
+  avisar($('avisoLetra'), 'Escrevendo a letra...', 'info');
+
+  try {
+    const estilo = $('estilo').value.trim();
+    const pedido = briefing + (estilo ? ('\n\nEstilo desejado: ' + estilo) : '') +
+      '\n\nEscreva a letra em portugues do Brasil.';
+
+    const { titulo, letra } = await api('/api/letra', {
+      method: 'POST',
+      body: JSON.stringify({ briefing: pedido })
+    });
+
+    $('titulo').value = titulo || '';
+    $('letra').value = letra || '';
+    $('blocoLetra').classList.remove('oculto');
+    limpar($('avisoLetra'));
+    $('blocoLetra').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (erro) {
+    avisar($('avisoLetra'), erro.message, 'erro');
+  } finally {
+    $('btLetra').disabled = false;
+  }
+};
+
+$('btPularLetra').onclick = () => {
+  $('blocoLetra').classList.remove('oculto');
+  $('blocoLetra').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+// ---------- musica ----------
+$('btMusica').onclick = async () => {
+  const letra = $('letra').value.trim();
+  if (!letra) { avisar($('avisoMusica'), 'A letra nao pode ficar vazia.', 'erro'); return; }
+
+  if (!confirm('Isso vai gerar uma musica de verdade e consumir 1 credito da conta Mureka. Continuar?')) return;
+
+  $('btMusica').disabled = true;
+  avisar($('avisoMusica'), 'Enviando para a Mureka...', 'info');
+
+  try {
+    const tarefa = await api('/api/musica', {
+      method: 'POST',
+      body: JSON.stringify({
+        letra,
+        estilo: $('estilo').value.trim() || undefined,
+        voz: $('voz').value || undefined
+      })
+    });
+
+    $('blocoResultado').classList.remove('oculto');
+    await acompanhar(tarefa.id);
+  } catch (erro) {
+    avisar($('avisoMusica'), erro.message, 'erro');
+  } finally {
+    $('btMusica').disabled = false;
+  }
+};
+
+const ROTULOS = {
+  preparing: 'preparando', queued: 'na fila', running: 'compondo',
+  streaming: 'finalizando', succeeded: 'pronta', failed: 'falhou',
+  timeouted: 'demorou demais', cancelled: 'cancelada'
+};
+
+async function acompanhar(id) {
+  const alvo = $('resultado');
+  const inicio = Date.now();
+
+  for (let tentativa = 0; tentativa < 120; tentativa++) {
+    let tarefa;
+    try {
+      tarefa = await api('/api/musica/' + encodeURIComponent(id));
+    } catch (erro) {
+      avisar($('avisoMusica'), erro.message, 'erro');
+      return;
+    }
+
+    const seg = Math.round((Date.now() - inicio) / 1000);
+    const rotulo = ROTULOS[tarefa.status] || tarefa.status;
+
+    if (!tarefa.concluida) {
+      alvo.innerHTML = '<p><span class="pulso"></span>Status: <strong>' + rotulo + '</strong> · ' + seg + 's</p>';
+      await new Promise((r) => setTimeout(r, 5000));
+      continue;
+    }
+
+    if (!tarefa.sucesso) {
+      alvo.innerHTML = '';
+      avisar($('avisoMusica'), 'A geracao ' + rotulo + '. ' + (tarefa.erro || ''), 'erro');
+      return;
+    }
+
+    limpar($('avisoMusica'));
+    const musica = tarefa.musicas[0];
+    if (!musica || !musica.audio) {
+      alvo.innerHTML = '<p>A tarefa terminou, mas nao veio audio.</p>';
+      return;
+    }
+
+    const dur = musica.duracaoMs ? Math.round(musica.duracaoMs / 1000) : null;
+    alvo.innerHTML =
+      '<p><strong>' + ($('titulo').value || 'Sua musica') + '</strong>' +
+      (dur ? ' · ' + Math.floor(dur / 60) + 'min ' + (dur % 60) + 's' : '') +
+      ' · pronta em ' + seg + 's</p>' +
+      '<audio controls src="' + musica.audio + '"></audio>' +
+      '<a class="baixar" href="' + musica.audio + '" target="_blank" rel="noopener">Abrir o audio numa aba nova</a>' +
+      '<p class="dica" style="margin-top:14px">O link da Mureka expira em 30 dias.</p>';
+    return;
+  }
+
+  avisar($('avisoMusica'), 'Passou de 10 minutos sem terminar. A tarefa pode ainda estar rodando na Mureka.', 'erro');
+}
+
+// Se o token ja estiver guardado nesta aba, adianta o login.
+try {
+  const guardado = sessionStorage.getItem(CHAVE);
+  if (guardado) { $('token').value = guardado; }
+} catch {}
+</script>
+</body>
+</html>
