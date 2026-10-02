@@ -12,6 +12,14 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "facasuamusica",
+      "database_id": "9dad6ecb-4c25-4479-b982-e90a1fadfc75",
+      "migrations_dir": "migrations"
+    }
+  ],
   "observability": {
     "enabled": true
   }
