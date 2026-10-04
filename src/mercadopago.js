@@ -24,7 +24,13 @@ async function chamar(env, caminho, { method = 'GET', body, idempotencia } = {})
   const token = env.MP_ACCESS_TOKEN;
 
   if (!token) {
-    throw new MercadoPagoError('MP_ACCESS_TOKEN nao configurado no Worker.', 503);
+    // O motivo fica no log e em /api/saude; o cliente nao tem o que fazer com
+    // o nome de uma variavel de ambiente.
+    console.error('MP_ACCESS_TOKEN nao configurado no Worker.');
+    throw new MercadoPagoError(
+      'O pagamento esta indisponivel no momento. Tente de novo em alguns minutos.',
+      503
+    );
   }
 
   const headers = { Authorization: `Bearer ${token}` };

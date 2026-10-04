@@ -229,6 +229,8 @@ async function verPedido(env, pedidoId) {
     creditos: pedido.creditos,
     creditosUsados: pedido.creditos_usados,
     creditosRestantes: pedido.creditos - pedido.creditos_usados,
+    // Vem do ambiente para o numero mudar sem publicar o site de novo.
+    suporteWhatsapp: env.WHATSAPP_SUPORTE || null,
     musicas: musicas.map((m) => ({
       id: m.id,
       titulo: m.titulo,

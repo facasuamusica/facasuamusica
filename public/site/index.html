@@ -746,6 +746,57 @@
   </div>
 </div>
 
+
+<!-- Checkout: dados de contato e ida ao Mercado Pago. O briefing da musica
+     acontece depois do pagamento, na pagina do pedido. -->
+<div class="modal" id="checkoutModal" hidden>
+  <div class="modal__backdrop" data-fechar-checkout></div>
+
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="checkoutTitulo">
+    <header class="modal__head">
+      <div class="modal__head-text">
+        <p class="modal__step" id="checkoutPacote">—</p>
+        <h2 id="checkoutTitulo">Para onde mandamos sua música?</h2>
+      </div>
+      <button class="modal__close" type="button" data-fechar-checkout aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <form class="modal__body" id="checkoutForm" novalidate>
+      <p class="step-panel__hint">Só precisamos disso para te enviar o link da sua música.
+        A história que vira letra você conta depois do pagamento.</p>
+
+      <label class="field">
+        <span class="field__label">Nome completo *</span>
+        <input type="text" name="nome" autocomplete="name" maxlength="120" required
+               placeholder="Como está no seu documento">
+      </label>
+
+      <label class="field">
+        <span class="field__label">WhatsApp *</span>
+        <input type="tel" name="whatsapp" autocomplete="tel" inputmode="numeric" maxlength="20" required
+               placeholder="(11) 91234-5678">
+        <span class="field__error" data-erro="whatsapp"></span>
+      </label>
+
+      <label class="field">
+        <span class="field__label">E-mail *</span>
+        <input type="email" name="email" autocomplete="email" maxlength="160" required
+               placeholder="voce@exemplo.com">
+        <span class="field__error" data-erro="email"></span>
+      </label>
+
+      <p class="step-panel__hint" id="checkoutErro" role="alert"></p>
+    </form>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-fechar-checkout>Voltar</button>
+      <button type="button" class="btn btn--primary" id="btPagar">Ir para o pagamento</button>
+    </footer>
+  </div>
+</div>
+
 <audio id="audio" preload="none"></audio>
 <script src="/assets/js/main.js"></script>
 </body>

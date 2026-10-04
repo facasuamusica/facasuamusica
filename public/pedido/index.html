@@ -173,6 +173,8 @@
         <a href="/site/#precos" style="color:var(--brand);font-weight:700">compre um novo pacote</a>.</p>
     </section>
 
+    <p id="ajuda" hidden style="text-align:center;margin-top:34px"></p>
+
   </div>
 </div>
 
@@ -242,6 +244,22 @@
 
   /* ---------- desenhar a pagina ---------- */
 
+  // Numero de atendimento, servido pela API para mudar sem republicar o site.
+  var suporte = null;
+
+  function botaoSuporte(rotulo, mensagem) {
+    if (!suporte) return null;
+
+    var a = document.createElement('a');
+    a.className = 'btn btn--ghost btn--sm';
+    a.style.marginTop = '12px';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.href = 'https://wa.me/' + suporte + '?text=' + encodeURIComponent(mensagem);
+    a.textContent = rotulo;
+    return a;
+  }
+
   var ROTULOS = {
     na_fila: ['Na fila', 'espera'],
     gerando: ['Compondo…', 'espera'],
@@ -304,13 +322,19 @@
       }
 
       // O cliente nunca fica no prejuizo: a fila tenta tres vezes e, se
-      // desistir, devolve o credito antes de mostrar isto.
+      // desistir, devolve o credito antes de mostrar isto. Quem preferir o
+      // dinheiro de volta fala no WhatsApp e o estorno sai pelo Mercado Pago.
       if (m.status === 'falhou') {
         var e = document.createElement('p');
         e.className = 'mini';
         e.textContent = 'A composição não saiu desta vez, e devolvemos o seu crédito — '
-          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada.';
+          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada, '
+          + 'ou falar com a gente se preferir o dinheiro de volta.';
         div.appendChild(e);
+
+        var fale = botaoSuporte('Falar com a gente',
+          'Oi! Minha música não ficou pronta e eu queria resolver. Pedido ' + pedidoId);
+        if (fale) div.appendChild(fale);
       }
 
       lista.appendChild(div);
@@ -318,6 +342,7 @@
   }
 
   function desenhar(p) {
+    suporte = p.suporteWhatsapp || null;
     $('carregando').hidden = true;
     $('conteudo').hidden = false;
 
@@ -340,6 +365,13 @@
     var temCredito = pago && p.creditosRestantes > 0;
     $('criar').hidden = !temCredito;
     $('semCredito').hidden = !(pago && p.creditosRestantes === 0);
+
+    var ajuda = $('ajuda');
+    ajuda.innerHTML = '';
+    var fale = botaoSuporte('Precisa de ajuda? Fale no WhatsApp',
+      'Oi! Preciso de ajuda com o pedido ' + pedidoId);
+    if (fale) ajuda.appendChild(fale);
+    ajuda.hidden = !fale;
   }
 
   /* ---------- atualizar sozinho ---------- */

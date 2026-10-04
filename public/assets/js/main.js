@@ -213,16 +213,127 @@
     sticky.classList.toggle('is-visible', show);
   }
 
-  /* ---------- checkout (integração Mercado Pago entra aqui) ---------- */
+  /* ---------- checkout ---------- */
+
+  var PACOTE_DO_PLANO = { essencial: 'p1', especial: 'p3', eterno: 'p7' };
+
+  var checkoutModal = $('#checkoutModal');
+  var checkoutForm = $('#checkoutForm');
+  var pacoteEscolhido = null;
+  var pacotesDoServidor = null;
+
+  function dinheiro(centavos) {
+    return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  // O preço vem do servidor: a página nunca decide quanto custa, senão
+  // bastaria editar o HTML para comprar 7 créditos por um centavo.
+  function rotuloDoPacote(id) {
+    var pedir = pacotesDoServidor
+      ? Promise.resolve(pacotesDoServidor)
+      : fetch('/api/pacotes').then(function (r) { return r.json(); }).then(function (lista) {
+          pacotesDoServidor = lista;
+          return lista;
+        });
+
+    return pedir.then(function (lista) {
+      var p = (lista || []).filter(function (x) { return x.id === id; })[0];
+      if (!p) return '';
+      return p.creditos + (p.creditos === 1 ? ' música' : ' músicas') + ' · ' + dinheiro(p.valorCentavos);
+    }).catch(function () { return ''; });
+  }
+
+  function abrirCheckout(plano) {
+    pacoteEscolhido = PACOTE_DO_PLANO[plano] || plano;
+    $('#checkoutErro').textContent = '';
+    checkoutModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    rotuloDoPacote(pacoteEscolhido).then(function (t) {
+      $('#checkoutPacote').textContent = t || 'Seu pacote';
+    });
+    setTimeout(function () { checkoutForm.elements.nome.focus(); }, 60);
+  }
+
+  function fecharCheckout() {
+    checkoutModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
   $$('[data-plan]').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
-      var plan = btn.getAttribute('data-plan');
-      try { sessionStorage.setItem('fsm_plano', plan); } catch (err) {}
-      console.info('[checkout] plano selecionado:', plan);
-      window.alert('Checkout ainda não conectado.\n\nPlano selecionado: ' + plan.toUpperCase() +
-                   '\n\nPróximo passo: criar a preferência de pagamento no Mercado Pago e redirecionar para o init_point.');
+      abrirCheckout(btn.getAttribute('data-plan'));
     });
+  });
+
+  $$('[data-fechar-checkout]').forEach(function (el) {
+    el.addEventListener('click', fecharCheckout);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && checkoutModal && !checkoutModal.hidden) fecharCheckout();
+  });
+
+  // Máscara leve: a pessoa vê (11) 91234-5678 enquanto digita, e o servidor
+  // normaliza de novo do lado de lá.
+  checkoutForm.elements.whatsapp.addEventListener('input', function (e) {
+    var d = e.target.value.replace(/\D/g, '').slice(0, 11);
+    var saida = d;
+    if (d.length > 7) saida = '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+    else if (d.length > 2) saida = '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    e.target.value = saida;
+  });
+
+  $('#btPagar').addEventListener('click', function () {
+    var campos = checkoutForm.elements;
+    var nome = campos.nome.value.trim();
+    var whatsapp = campos.whatsapp.value.trim();
+    var email = campos.email.value.trim();
+    var erro = $('#checkoutErro');
+
+    erro.textContent = '';
+
+    if (nome.split(/\s+/).length < 2) {
+      erro.textContent = 'Escreva seu nome completo, com sobrenome.';
+      campos.nome.focus();
+      return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      erro.textContent = 'Confira o e-mail — é por ele que o link da música chega.';
+      campos.email.focus();
+      return;
+    }
+    if (whatsapp.replace(/\D/g, '').length !== 11) {
+      erro.textContent = 'Informe DDD e celular, como (11) 91234-5678.';
+      campos.whatsapp.focus();
+      return;
+    }
+
+    var bt = $('#btPagar');
+    bt.disabled = true;
+    bt.textContent = 'Abrindo o pagamento…';
+
+    fetch('/api/pedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome: nome, email: email, whatsapp: whatsapp, pacote: pacoteEscolhido })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error || 'Não conseguimos abrir o pagamento.');
+        if (!res.d.checkoutUrl) throw new Error('O pagamento está indisponível agora. Tente em alguns minutos.');
+
+        // Guarda o link antes de sair da página: se a pessoa desistir no
+        // Mercado Pago, ainda consegue voltar ao pedido dela.
+        try { localStorage.setItem('fsm_ultimo_pedido', res.d.acompanhe); } catch (e) {}
+
+        window.location.href = res.d.checkoutUrl;
+      })
+      .catch(function (e) {
+        erro.textContent = e.message;
+        bt.disabled = false;
+        bt.textContent = 'Ir para o pagamento';
+      });
   });
 
   /* ---------- briefing multi-etapas ---------- */
