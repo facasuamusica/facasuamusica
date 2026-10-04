@@ -48,21 +48,56 @@ function textoLimpo(valor, max) {
   return typeof valor === 'string' ? valor.trim().slice(0, max) : '';
 }
 
+const DDDS = new Set([
+  11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 28,
+  31, 32, 33, 34, 35, 37, 38, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+  51, 53, 54, 55, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+  71, 73, 74, 75, 77, 79, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+  91, 92, 93, 94, 95, 96, 97, 98, 99
+]);
+
+/**
+ * Normaliza o celular para o formato que o WhatsApp exige (5511999999999).
+ * Guardar o que a pessoa digitou — "(11) 9 9999-9999", "+55 11 99999999" —
+ * so adiaria o problema para a hora do envio, quando ja nao da para corrigir.
+ * @returns {string|null} o numero em E.164 sem o "+", ou null se nao for valido.
+ */
+function normalizarWhatsapp(valor) {
+  let digitos = String(valor ?? '').replace(/\D/g, '');
+
+  // Alguns digitam o 0 do DDD, outros o +55; sobra sempre DDD + numero.
+  if (digitos.startsWith('55') && digitos.length > 11) digitos = digitos.slice(2);
+  if (digitos.startsWith('0')) digitos = digitos.slice(1);
+
+  // Celular brasileiro: 2 do DDD + 9 digitos comecando por 9.
+  if (digitos.length !== 11) return null;
+  if (!DDDS.has(Number(digitos.slice(0, 2)))) return null;
+  if (digitos[2] !== '9') return null;
+
+  return '55' + digitos;
+}
+
 async function criarPedido(request, env, url) {
   const { nome, email, whatsapp, pacote } = await lerJson(request);
 
   const dados = {
     nome: textoLimpo(nome, 120),
-    email: textoLimpo(email, 160),
-    whatsapp: textoLimpo(whatsapp, 40)
+    email: textoLimpo(email, 160).toLowerCase(),
+    whatsapp: normalizarWhatsapp(whatsapp)
   };
 
-  if (!dados.nome || !dados.email || !dados.whatsapp) {
+  if (!dados.nome || !dados.email || !whatsapp) {
     return erro('Informe nome, e-mail e WhatsApp.', 400);
   }
 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(dados.email)) {
     return erro('E-mail invalido.', 400);
+  }
+
+  // Barra o numero torto aqui, antes do pagamento: depois da compra nao ha
+  // como pedir a correcao a quem ja fechou a aba.
+  if (!dados.whatsapp) {
+    return erro('WhatsApp invalido. Informe DDD e celular, como 11 91234-5678.', 400);
   }
 
   const item = PACOTES[pacote];

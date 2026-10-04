@@ -213,7 +213,7 @@ let env = ambiente(db);
 respostasMp['/checkout/preferences'] = () =>
   new Response(JSON.stringify({ id: 'pref-1', init_point: 'https://mp/checkout/pref-1' }), { status: 200 });
 
-let r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'Marise', email: 'x@y.com', whatsapp: '11999', pacote: 'p3' } }), env);
+let r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'Marise', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p3' } }), env);
 let corpo = await r.json();
 checa('cria pedido e devolve 201', r.status === 201, `status=${r.status}`);
 checa('devolve link de checkout', corpo.checkoutUrl === 'https://mp/checkout/pref-1');
@@ -223,18 +223,49 @@ checa('grava valor do catalogo, nao do cliente', db._pedidos.get(PEDIDO).valor_c
 checa('grava creditos do pacote', db._pedidos.get(PEDIDO).creditos === 3);
 checa('pedido nasce pendente', db._pedidos.get(PEDIDO).status === 'pendente');
 
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p3', valorCentavos: 1 } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p3', valorCentavos: 1 } }), env);
 corpo = await r.json();
 checa('preco enviado pelo cliente e ignorado', db._pedidos.get(corpo.pedidoId).valor_centavos === 8700);
 
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'nao-e-email', whatsapp: '1', pacote: 'p1' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'nao-e-email', whatsapp: '11912345678', pacote: 'p1' } }), env);
 checa('recusa e-mail invalido', r.status === 400);
 
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'inexistente' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'inexistente' } }), env);
 checa('recusa pacote inexistente', r.status === 400);
 
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: '', email: 'x@y.com', whatsapp: '1', pacote: 'p1' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: '', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p1' } }), env);
 checa('exige nome, e-mail e whatsapp', r.status === 400);
+
+console.log('\nWhatsApp: guardado pronto para enviar');
+var formatos = [
+  ['11912345678',       '5511912345678', 'so digitos'],
+  ['(11) 91234-5678',   '5511912345678', 'com parenteses e traco'],
+  ['+55 11 91234-5678', '5511912345678', 'com codigo do pais'],
+  ['011 91234 5678',    '5511912345678', 'com o zero do DDD'],
+  ['21 99876-5432',     '5521998765432', 'outro DDD']
+];
+for (const [digitado, esperado, descricao] of formatos) {
+  const resp = await worker.fetch(req('/api/pedido', {
+    method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: digitado, pacote: 'p1' }
+  }), env);
+  const c = await resp.json();
+  const guardado = db._pedidos.get(c.pedidoId)?.whatsapp;
+  checa('normaliza ' + descricao, guardado === esperado, `${digitado} -> ${guardado}`);
+}
+
+var invalidos = [
+  ['1191234567',   'sem o nono digito'],
+  ['23912345678',  'DDD que nao existe (23)'],
+  ['11812345678',  'fixo, nao celular'],
+  ['912345678',    'sem DDD'],
+  ['abc',          'texto']
+];
+for (const [digitado, descricao] of invalidos) {
+  const resp = await worker.fetch(req('/api/pedido', {
+    method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: digitado, pacote: 'p1' }
+  }), env);
+  checa('recusa ' + descricao, resp.status === 400, `${digitado} -> status ${resp.status}`);
+}
 
 // ================= webhook =================
 console.log('\nWebhook: assinatura');
@@ -285,7 +316,7 @@ checa('creditos nao dobram no reenvio', db._pedidos.get(PEDIDO).creditos === 3);
 
 console.log('\nWebhook: valor divergente');
 db = criarDb(); env = ambiente(db);
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p7' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p7' } }), env);
 const CARO = (await r.json()).pedidoId;
 respostasMp['/v1/payments/pay-2'] = () =>
   new Response(JSON.stringify({ id: 'pay-2', status: 'approved', transaction_amount: 1, external_reference: CARO }), { status: 200 });
@@ -300,7 +331,7 @@ checa('pagamento de R$ 1 nao libera pacote de R$ 147', db._pedidos.get(CARO).sta
 // ================= area do cliente =================
 console.log('\nArea do cliente');
 db = criarDb(); env = ambiente(db);
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p1' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p1' } }), env);
 const P1 = (await r.json()).pedidoId;
 
 r = await worker.fetch(req(`/api/pedido/${P1}/musica`, { method: 'POST', body: { letra: 'oi' } }), env);
@@ -330,7 +361,7 @@ checa('sem credito devolve 402, nao 409', r.status === 402, `status=${r.status}`
 
 console.log('\nFila: espera a vez em vez de recusar');
 db = criarDb(); env = ambiente(db);
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p3' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p3' } }), env);
 const P3 = (await r.json()).pedidoId;
 db._pedidos.get(P3).status = 'pago';
 
@@ -345,7 +376,7 @@ checa('so uma tarefa aberta na Mureka (limite do plano)',
 
 console.log('\nFalha nunca custa credito ao cliente');
 db = criarDb(); env = ambiente(db);
-r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p1' } }), env);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '11912345678', pacote: 'p1' } }), env);
 const P2 = (await r.json()).pedidoId;
 db._pedidos.get(P2).status = 'pago';
 respostasMureka['/v1/song/generate'] = () =>
