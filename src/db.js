@@ -130,21 +130,84 @@ export async function consumirCredito(env, pedidoId, dados) {
   return (consumo.meta?.changes ?? 0) > 0 ? musicaId : null;
 }
 
-/** Devolve o credito quando a geracao nem chegou a comecar na Mureka. */
-export async function devolverCredito(env, pedidoId, musicaId, motivo) {
+/**
+ * Desiste da musica e devolve o credito. O `credito_devolvido = 0` no WHERE
+ * garante que a devolucao aconteca uma vez so: sem isso, duas passadas do cron
+ * sobre a mesma musica dariam creditos de graca ao cliente.
+ */
+export async function desistirDaMusica(env, pedidoId, musicaId, motivo) {
   const db = exigirBanco(env);
 
-  await db.batch([
-    db
-      .prepare(
-        `UPDATE pedidos SET creditos_usados = creditos_usados - 1
-         WHERE id = ? AND creditos_usados > 0`
-      )
-      .bind(pedidoId),
-    db
-      .prepare(`UPDATE musicas SET status = 'falhou', erro = ?, concluido_em = ? WHERE id = ?`)
-      .bind(motivo ?? 'falha ao abrir a geracao', agora(), musicaId)
-  ]);
+  const r = await db
+    .prepare(
+      `UPDATE musicas SET status = 'falhou', erro = ?, concluido_em = ?, credito_devolvido = 1
+       WHERE id = ? AND credito_devolvido = 0`
+    )
+    .bind(motivo ?? 'nao foi possivel compor', agora(), musicaId)
+    .run();
+
+  if ((r.meta?.changes ?? 0) === 0) return false;
+
+  await db
+    .prepare(
+      `UPDATE pedidos SET creditos_usados = creditos_usados - 1
+       WHERE id = ? AND creditos_usados > 0`
+    )
+    .bind(pedidoId)
+    .run();
+
+  return true;
+}
+
+/**
+ * Devolve a musica para a fila depois de uma falha passageira. A maioria dos
+ * erros da Mureka some na segunda tentativa, e o cliente nao precisa saber.
+ */
+export async function reenfileirar(env, musicaId) {
+  await exigirBanco(env)
+    .prepare(
+      `UPDATE musicas SET status = 'na_fila', mureka_task_id = NULL, tentativas = tentativas + 1
+       WHERE id = ?`
+    )
+    .bind(musicaId)
+    .run();
+}
+
+/** Musicas que a fila precisa acompanhar: as que ja foram enviadas a Mureka. */
+export async function musicasEmGeracao(env) {
+  const r = await exigirBanco(env)
+    .prepare(
+      `SELECT id, pedido_id, mureka_task_id, tentativas
+       FROM musicas WHERE status = 'gerando' AND mureka_task_id IS NOT NULL`
+    )
+    .all();
+
+  return r.results ?? [];
+}
+
+/** A proxima da fila, mais antiga primeiro, para ninguem furar a espera. */
+export async function proximaDaFila(env) {
+  return exigirBanco(env)
+    .prepare(
+      `SELECT id, pedido_id, letra, estilo, voz, tentativas
+       FROM musicas WHERE status = 'na_fila' ORDER BY criado_em LIMIT 1`
+    )
+    .first();
+}
+
+/**
+ * Marca a musica como em geracao antes de falar com a Mureka. O
+ * `status = 'na_fila'` no WHERE e a reserva: se o cron e uma visita a pagina
+ * tentarem a mesma musica, so um passa e nao abrimos duas tarefas pagas.
+ * @returns {Promise<boolean>} true se esta chamada ficou com a vez.
+ */
+export async function reservarDaFila(env, musicaId) {
+  const r = await exigirBanco(env)
+    .prepare(`UPDATE musicas SET status = 'gerando' WHERE id = ? AND status = 'na_fila'`)
+    .bind(musicaId)
+    .run();
+
+  return (r.meta?.changes ?? 0) > 0;
 }
 
 export async function anotarTarefaMureka(env, musicaId, taskId) {
@@ -164,13 +227,6 @@ export async function concluirMusica(env, musicaId, { audioUrl, titulo }) {
     .run();
 }
 
-export async function falharMusica(env, musicaId, motivo) {
-  await exigirBanco(env)
-    .prepare(`UPDATE musicas SET status = 'falhou', erro = ?, concluido_em = ? WHERE id = ?`)
-    .bind(motivo ?? 'falhou', agora(), musicaId)
-    .run();
-}
-
 export async function musicasDoPedido(env, pedidoId) {
   const r = await exigirBanco(env)
     .prepare(
@@ -181,10 +237,6 @@ export async function musicasDoPedido(env, pedidoId) {
     .all();
 
   return r.results ?? [];
-}
-
-export async function buscarMusica(env, musicaId) {
-  return exigirBanco(env).prepare('SELECT * FROM musicas WHERE id = ?').bind(musicaId).first();
 }
 
 /** Ha alguma geracao em andamento? O plano da Mureka permite uma por vez. */

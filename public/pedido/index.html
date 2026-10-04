@@ -243,10 +243,10 @@
   /* ---------- desenhar a pagina ---------- */
 
   var ROTULOS = {
-    na_fila: ['Na fila', ''],
+    na_fila: ['Na fila', 'espera'],
     gerando: ['Compondo…', 'espera'],
     pronta:  ['Pronta', 'ok'],
-    falhou:  ['Não deu certo', 'erro']
+    falhou:  ['Crédito devolvido', 'erro']
   };
 
   function desenharMusicas(musicas) {
@@ -303,10 +303,13 @@
         div.appendChild(baixar);
       }
 
+      // O cliente nunca fica no prejuizo: a fila tenta tres vezes e, se
+      // desistir, devolve o credito antes de mostrar isto.
       if (m.status === 'falhou') {
         var e = document.createElement('p');
         e.className = 'mini';
-        e.textContent = m.erro || 'Não conseguimos gerar esta música. Fale com a gente que resolvemos.';
+        e.textContent = 'A composição não saiu desta vez, e devolvemos o seu crédito — '
+          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada.';
         div.appendChild(e);
       }
 

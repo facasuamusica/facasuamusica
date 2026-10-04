@@ -72,8 +72,40 @@ function criarDb() {
       if (!p || p.status !== 'pago') return { meta: { changes: 0 } };
       musicas.set(id, {
         id, pedido_id, briefing, titulo, letra, estilo, voz, criado_em,
-        status: 'na_fila', mureka_task_id: null, audio_url: null, erro: null, concluido_em: null
+        status: 'na_fila', mureka_task_id: null, audio_url: null, erro: null, concluido_em: null,
+        tentativas: 0, credito_devolvido: 0
       });
+      return { meta: { changes: 1 } };
+    }
+
+    // --- fila ---
+
+    if (s.includes("WHERE status = 'gerando' AND mureka_task_id IS NOT NULL")) {
+      return { results: [...musicas.values()].filter((m) => m.status === 'gerando' && m.mureka_task_id) };
+    }
+
+    if (s.includes("WHERE status = 'na_fila' ORDER BY criado_em")) {
+      return [...musicas.values()].filter((m) => m.status === 'na_fila')
+        .sort((a, b) => a.criado_em - b.criado_em)[0] ?? null;
+    }
+
+    if (s.includes("SET status = 'gerando' WHERE id = ? AND status = 'na_fila'")) {
+      const m = musicas.get(args[0]);
+      if (!m || m.status !== 'na_fila') return { meta: { changes: 0 } };
+      m.status = 'gerando';
+      return { meta: { changes: 1 } };
+    }
+
+    if (s.includes("SET status = 'na_fila', mureka_task_id = NULL")) {
+      const m = musicas.get(args[0]);
+      if (m) Object.assign(m, { status: 'na_fila', mureka_task_id: null, tentativas: m.tentativas + 1 });
+      return { meta: { changes: 1 } };
+    }
+
+    if (s.includes('credito_devolvido = 1')) {
+      const m = musicas.get(args[2]);
+      if (!m || m.credito_devolvido === 1) return { meta: { changes: 0 } };
+      Object.assign(m, { status: 'falhou', erro: args[0], concluido_em: args[1], credito_devolvido: 1 });
       return { meta: { changes: 1 } };
     }
 
@@ -284,21 +316,34 @@ db._pedidos.get(P1).status = 'pago';
 
 respostasMureka['/v1/song/generate'] = () =>
   new Response(JSON.stringify({ id: 'task-9', status: 'preparing' }), { status: 200 });
+respostasMureka['/v1/song/query/task-9'] = () =>
+  new Response(JSON.stringify({ id: 'task-9', status: 'preparing' }), { status: 200 });
 
 r = await worker.fetch(req(`/api/pedido/${P1}/musica`, { method: 'POST', body: { letra: '[Verse]\noi' } }), env);
-corpo = await r.json();
-checa('pedido pago gera musica (202)', r.status === 202, `status=${r.status}`);
+checa('pedido pago aceita o pedido de musica (202)', r.status === 202, `status=${r.status}`);
 checa('consome um credito', db._pedidos.get(P1).creditos_usados === 1);
+checa('a fila enviou a musica a Mureka', [...db._musicas.values()][0].mureka_task_id === 'task-9');
 
-r = await worker.fetch(req(`/api/pedido/${P1}/musica`, { method: 'POST', body: { letra: 'outra' } }), env);
-checa('bloqueia geracao simultanea (limite da Mureka)', r.status === 409, `status=${r.status}`);
-
-// Sem geracao em andamento, mas sem credito sobrando.
-[...db._musicas.values()].forEach((m) => { m.status = 'pronta'; });
+// Sem credito sobrando (o pacote era de 1).
 r = await worker.fetch(req(`/api/pedido/${P1}/musica`, { method: 'POST', body: { letra: 'mais uma' } }), env);
-checa('sem credito devolve 402', r.status === 402, `status=${r.status}`);
+checa('sem credito devolve 402, nao 409', r.status === 402, `status=${r.status}`);
 
-console.log('\nDevolucao de credito');
+console.log('\nFila: espera a vez em vez de recusar');
+db = criarDb(); env = ambiente(db);
+r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p3' } }), env);
+const P3 = (await r.json()).pedidoId;
+db._pedidos.get(P3).status = 'pago';
+
+await worker.fetch(req(`/api/pedido/${P3}/musica`, { method: 'POST', body: { letra: 'primeira' } }), env);
+r = await worker.fetch(req(`/api/pedido/${P3}/musica`, { method: 'POST', body: { letra: 'segunda' } }), env);
+checa('segunda musica e aceita, nao recusada', r.status === 202, `status=${r.status}`);
+
+let estados = [...db._musicas.values()].map((m) => m.status).sort();
+checa('uma gerando e uma esperando a vez', estados.join(',') === 'gerando,na_fila', estados.join(','));
+checa('so uma tarefa aberta na Mureka (limite do plano)',
+  [...db._musicas.values()].filter((m) => m.mureka_task_id).length === 1);
+
+console.log('\nFalha nunca custa credito ao cliente');
 db = criarDb(); env = ambiente(db);
 r = await worker.fetch(req('/api/pedido', { method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: '1', pacote: 'p1' } }), env);
 const P2 = (await r.json()).pedidoId;
@@ -307,8 +352,24 @@ respostasMureka['/v1/song/generate'] = () =>
   new Response(JSON.stringify({ message: 'You exceeded your current quota' }), { status: 429 });
 
 r = await worker.fetch(req(`/api/pedido/${P2}/musica`, { method: 'POST', body: { letra: 'oi' } }), env);
-checa('erro da Mureka nao vira 200', r.status !== 200 && r.status !== 202, `status=${r.status}`);
-checa('credito volta quando a Mureka recusa', db._pedidos.get(P2).creditos_usados === 0, `usados=${db._pedidos.get(P2).creditos_usados}`);
+checa('a recusa da Mureka nao quebra a resposta ao cliente', r.status === 202, `status=${r.status}`);
+checa('primeira falha nao desiste: volta para a fila', [...db._musicas.values()][0].status === 'na_fila');
+checa('credito ainda reservado durante as tentativas', db._pedidos.get(P2).creditos_usados === 1);
+
+// Mais duas passadas da fila: na terceira ela desiste.
+await worker.fetch(req(`/api/pedido/${P2}`), env);
+await worker.fetch(req(`/api/pedido/${P2}`), env);
+
+const falhada = [...db._musicas.values()][0];
+checa('desiste depois de tres tentativas', falhada.status === 'falhou', `status=${falhada.status} tentativas=${falhada.tentativas}`);
+checa('o credito volta ao desistir', db._pedidos.get(P2).creditos_usados === 0, `usados=${db._pedidos.get(P2).creditos_usados}`);
+
+// O cron pode passar de novo sobre a mesma musica.
+await worker.fetch(req(`/api/pedido/${P2}`), env);
+checa('credito nao e devolvido duas vezes', db._pedidos.get(P2).creditos_usados === 0, `usados=${db._pedidos.get(P2).creditos_usados}`);
+
+corpo = await (await worker.fetch(req(`/api/pedido/${P2}`), env)).json();
+checa('o cliente volta a ter o credito disponivel', corpo.creditosRestantes === 1, JSON.stringify(corpo.creditosRestantes));
 
 console.log('\nDiagnostico');
 r = await worker.fetch(req('/api/saude'), env);

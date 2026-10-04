@@ -6,6 +6,7 @@ import {
   consultarPagamento,
   criarPreferencia
 } from './mercadopago.js';
+import { empurrarFila } from './fila.js';
 import * as db from './db.js';
 
 // O estudio interno (/site/estudio) falha fechado: sem o segredo
@@ -164,43 +165,27 @@ async function receberWebhook(request, env) {
 
 // ---------- area do cliente ----------
 
-// Enquanto nao ha fila de verdade, o andamento e atualizado quando o cliente
-// olha a pagina. Resolve o caso comum sem depender de agendamento.
-async function sincronizarMusicas(env, musicas) {
-  for (const musica of musicas) {
-    if (musica.status !== 'gerando') continue;
-
-    const completa = await db.buscarMusica(env, musica.id);
-    if (!completa?.mureka_task_id) continue;
-
-    let tarefa;
-    try {
-      tarefa = await consultarMusica(env, completa.mureka_task_id);
-    } catch {
-      continue;
-    }
-
-    if (!tarefa.concluida) continue;
-
-    if (tarefa.sucesso && tarefa.musicas[0]?.audio) {
-      await db.concluirMusica(env, musica.id, { audioUrl: tarefa.musicas[0].audio });
-      musica.status = 'pronta';
-      musica.audio_url = tarefa.musicas[0].audio;
-    } else {
-      await db.falharMusica(env, musica.id, tarefa.erro ?? 'a geracao falhou');
-      musica.status = 'falhou';
-      musica.erro = tarefa.erro ?? 'a geracao falhou';
-    }
+// A fila pode falhar sem derrubar a resposta: o cron passa de novo em um
+// minuto, e o cliente ve a pagina com o que ja existe.
+async function empurrarSemQuebrar(env) {
+  try {
+    await empurrarFila(env);
+  } catch (e) {
+    console.error('Falha ao empurrar a fila:', e);
   }
-
-  return musicas;
 }
 
 async function verPedido(env, pedidoId) {
+  if (!(await db.buscarPedido(env, pedidoId))) return erro('Pedido nao encontrado.', 404);
+
+  // Quem esta olhando a pagina nao espera o relogio do cron.
+  await empurrarSemQuebrar(env);
+
+  // Relido depois da fila: ela pode ter devolvido um credito neste meio tempo.
   const pedido = await db.buscarPedido(env, pedidoId);
   if (!pedido) return erro('Pedido nao encontrado.', 404);
 
-  const musicas = await sincronizarMusicas(env, await db.musicasDoPedido(env, pedido.id));
+  const musicas = await db.musicasDoPedido(env, pedido.id);
 
   return Response.json({
     id: pedido.id,
@@ -236,30 +221,18 @@ async function pedirMusica(request, env, pedidoId) {
   if (!pedido) return erro('Pedido nao encontrado.', 404);
   if (pedido.status !== 'pago') return erro('Este pedido ainda nao foi pago.', 402);
 
-  // O plano da Mureka permite uma geracao por vez: sem essa guarda, o segundo
-  // cliente receberia um erro cru do fornecedor.
-  if (await db.geracaoEmAndamento(env)) {
-    return erro('Ha outra musica sendo gerada agora. Tente de novo em alguns minutos.', 409);
-  }
-
   const corpo = await lerJson(request);
   if (!corpo?.letra?.trim()) return erro('A letra nao pode ficar vazia.', 400);
 
   const musicaId = await db.consumirCredito(env, pedido.id, corpo);
   if (!musicaId) return erro('Seus creditos acabaram.', 402);
 
-  let tarefa;
-  try {
-    tarefa = await gerarMusica(env, corpo);
-  } catch (e) {
-    // A Mureka recusou: o credito volta, senao o cliente paga por nada.
-    await db.devolverCredito(env, pedido.id, musicaId, e.message);
-    throw e;
-  }
+  // Quem fala com a Mureka e a fila, nao esta rota. Assim o cliente nunca
+  // recebe "ha outra musica sendo gerada": ele entra na fila, e a espera
+  // aparece na propria pagina.
+  await empurrarSemQuebrar(env);
 
-  await db.anotarTarefaMureka(env, musicaId, tarefa.id);
-
-  return Response.json({ musicaId, status: tarefa.status }, { status: 202 });
+  return Response.json({ musicaId, status: 'na_fila' }, { status: 202 });
 }
 
 // ---------- roteador ----------
@@ -358,5 +331,13 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
+  },
+
+  // De minuto em minuto: sem isso, a musica de quem fechou a aba ficaria
+  // "gerando" para sempre, porque ninguem consultaria o andamento.
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(
+      empurrarFila(env).catch((e) => console.error('Cron da fila falhou:', e))
+    );
   }
 };
