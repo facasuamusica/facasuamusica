@@ -775,8 +775,11 @@
 
       <label class="field">
         <span class="field__label">WhatsApp *</span>
-        <input type="tel" name="whatsapp" autocomplete="tel" inputmode="numeric" maxlength="20" required
+        <!-- inputmode "tel", não "numeric": o teclado numérico do celular não
+             tem o "+", e quem mora fora do Brasil precisa dele. -->
+        <input type="tel" name="whatsapp" autocomplete="tel" inputmode="tel" maxlength="24" required
                placeholder="(11) 91234-5678">
+        <span class="field__counter">Fora do Brasil? Comece com + e o código do país, como +351 912 345 678.</span>
         <span class="field__error" data-erro="whatsapp"></span>
       </label>
 

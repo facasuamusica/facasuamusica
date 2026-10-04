@@ -275,9 +275,18 @@
   });
 
   // Máscara leve: a pessoa vê (11) 91234-5678 enquanto digita, e o servidor
-  // normaliza de novo do lado de lá.
+  // normaliza de novo do lado de lá. Quem começa com "+" está dizendo o país —
+  // brasileiro morando fora — e aí a máscara sai do caminho, senão ela cortaria
+  // o número em 11 dígitos e estragaria o que a pessoa escreveu.
   checkoutForm.elements.whatsapp.addEventListener('input', function (e) {
-    var d = e.target.value.replace(/\D/g, '').slice(0, 11);
+    var valor = e.target.value;
+
+    if (valor.trim().charAt(0) === '+') {
+      e.target.value = '+' + valor.slice(valor.indexOf('+') + 1).replace(/[^\d\s]/g, '').slice(0, 20);
+      return;
+    }
+
+    var d = valor.replace(/\D/g, '').slice(0, 11);
     var saida = d;
     if (d.length > 7) saida = '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
     else if (d.length > 2) saida = '(' + d.slice(0, 2) + ') ' + d.slice(2);
@@ -303,8 +312,17 @@
       campos.email.focus();
       return;
     }
-    if (whatsapp.replace(/\D/g, '').length !== 11) {
-      erro.textContent = 'Informe DDD e celular, como (11) 91234-5678.';
+    var digitos = whatsapp.replace(/\D/g, '');
+    var deFora = whatsapp.trim().charAt(0) === '+';
+
+    if (deFora && (digitos.length < 8 || digitos.length > 15)) {
+      erro.textContent = 'Confira o número com o código do país, como +351 912 345 678.';
+      campos.whatsapp.focus();
+      return;
+    }
+    if (!deFora && digitos.length !== 11) {
+      erro.textContent = 'Informe DDD e celular, como (11) 91234-5678. '
+        + 'Se o número for de fora do Brasil, comece com + e o código do país.';
       campos.whatsapp.focus();
       return;
     }

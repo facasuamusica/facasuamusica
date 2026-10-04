@@ -56,25 +56,47 @@ const DDDS = new Set([
   91, 92, 93, 94, 95, 96, 97, 98, 99
 ]);
 
+/** Celular brasileiro: 2 do DDD + 9 digitos comecando por 9. */
+function comoBrasileiro(digitos) {
+  let d = digitos;
+
+  // Alguns digitam o 55 do pais, outros o 0 do DDD; sobra sempre DDD + numero.
+  if (d.length > 11 && d.startsWith('55')) d = d.slice(2);
+  if (d.startsWith('0')) d = d.slice(1);
+
+  if (d.length !== 11) return null;
+  if (!DDDS.has(Number(d.slice(0, 2)))) return null;
+  if (d[2] !== '9') return null;
+
+  return '55' + d;
+}
+
 /**
- * Normaliza o celular para o formato que o WhatsApp exige (5511999999999).
- * Guardar o que a pessoa digitou — "(11) 9 9999-9999", "+55 11 99999999" —
- * so adiaria o problema para a hora do envio, quando ja nao da para corrigir.
+ * Normaliza o celular para o formato que o WhatsApp exige (5511912345678).
+ * Guardar o que a pessoa digitou so adiaria o problema para a hora do envio,
+ * quando ja nao da para pedir a correcao.
+ *
+ * O "+" e o que distingue os dois casos: sem ele assumimos Brasil, que e a
+ * maioria e nao deve ter trabalho nenhum; com ele a pessoa disse o pais, e ai
+ * cabe o brasileiro morando fora, que compra para a familia daqui.
+ *
  * @returns {string|null} o numero em E.164 sem o "+", ou null se nao for valido.
  */
 function normalizarWhatsapp(valor) {
-  let digitos = String(valor ?? '').replace(/\D/g, '');
+  const bruto = String(valor ?? '').trim();
+  const digitos = bruto.replace(/\D/g, '');
+  if (!digitos) return null;
 
-  // Alguns digitam o 0 do DDD, outros o +55; sobra sempre DDD + numero.
-  if (digitos.startsWith('55') && digitos.length > 11) digitos = digitos.slice(2);
-  if (digitos.startsWith('0')) digitos = digitos.slice(1);
+  if (bruto.startsWith('+')) {
+    // +55 e Brasil escrito por extenso: vale a mesma conferencia de sempre.
+    if (digitos.startsWith('55')) return comoBrasileiro(digitos);
 
-  // Celular brasileiro: 2 do DDD + 9 digitos comecando por 9.
-  if (digitos.length !== 11) return null;
-  if (!DDDS.has(Number(digitos.slice(0, 2)))) return null;
-  if (digitos[2] !== '9') return null;
+    // Nao da para conhecer o plano de numeracao de cada pais sem carregar uma
+    // tabela inteira, entao vale o limite do proprio padrao E.164.
+    return digitos.length >= 8 && digitos.length <= 15 ? digitos : null;
+  }
 
-  return '55' + digitos;
+  return comoBrasileiro(digitos);
 }
 
 async function criarPedido(request, env, url) {
@@ -97,7 +119,11 @@ async function criarPedido(request, env, url) {
   // Barra o numero torto aqui, antes do pagamento: depois da compra nao ha
   // como pedir a correcao a quem ja fechou a aba.
   if (!dados.whatsapp) {
-    return erro('WhatsApp invalido. Informe DDD e celular, como 11 91234-5678.', 400);
+    return erro(
+      'WhatsApp invalido. Informe DDD e celular, como 11 91234-5678 — '
+        + 'ou comece com + e o codigo do pais, se o numero for de fora do Brasil.',
+      400
+    );
   }
 
   const item = PACOTES[pacote];

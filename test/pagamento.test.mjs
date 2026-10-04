@@ -253,12 +253,32 @@ for (const [digitado, esperado, descricao] of formatos) {
   checa('normaliza ' + descricao, guardado === esperado, `${digitado} -> ${guardado}`);
 }
 
+console.log('\nWhatsApp: brasileiro morando fora');
+var deFora = [
+  ['+351 912 345 678',  '351912345678',  'Portugal'],
+  ['+1 (617) 555-0142', '16175550142',   'Estados Unidos'],
+  ['+81 90 1234 5678',  '819012345678',  'Japao'],
+  ['+44 7700 900123',   '447700900123',  'Reino Unido'],
+  ['+55 11 91234-5678', '5511912345678', 'brasileiro escrito com +55']
+];
+for (const [digitado, esperado, pais] of deFora) {
+  const resp = await worker.fetch(req('/api/pedido', {
+    method: 'POST', body: { nome: 'M', email: 'x@y.com', whatsapp: digitado, pacote: 'p1' }
+  }), env);
+  const c = await resp.json();
+  const guardado = db._pedidos.get(c.pedidoId)?.whatsapp;
+  checa('aceita numero de ' + pais, guardado === esperado, `${digitado} -> ${guardado}`);
+}
+
 var invalidos = [
   ['1191234567',   'sem o nono digito'],
   ['23912345678',  'DDD que nao existe (23)'],
   ['11812345678',  'fixo, nao celular'],
   ['912345678',    'sem DDD'],
-  ['abc',          'texto']
+  ['abc',          'texto'],
+  ['+123',         'codigo de pais sem numero'],
+  ['+1234567890123456', 'passa do limite do E.164'],
+  ['+55 11 8888-7777',  'fixo brasileiro escrito com +55']
 ];
 for (const [digitado, descricao] of invalidos) {
   const resp = await worker.fetch(req('/api/pedido', {
