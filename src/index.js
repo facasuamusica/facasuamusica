@@ -271,7 +271,7 @@ async function escreverLetra(request, env, pedidoId) {
   const pedido = await db.buscarPedido(env, pedidoId);
   if (!pedido) return erro('Pedido nao encontrado.', 404);
   if (pedido.status !== 'pago') return erro('Este pedido ainda nao foi pago.', 402);
-  if (pedido.creditos_usados >= pedido.creditos) return erro('Seus creditos acabaram.', 402);
+  if (pedido.creditos_usados >= pedido.creditos) return erro('Voce ja criou todas as musicas deste pedido.', 402);
 
   const { briefing } = await lerJson(request);
   if (!briefing?.trim()) return erro('Conte a historia da musica.', 400);
@@ -288,7 +288,7 @@ async function pedirMusica(request, env, pedidoId) {
   if (!corpo?.letra?.trim()) return erro('A letra nao pode ficar vazia.', 400);
 
   const musicaId = await db.consumirCredito(env, pedido.id, corpo);
-  if (!musicaId) return erro('Seus creditos acabaram.', 402);
+  if (!musicaId) return erro('Voce ja criou todas as musicas deste pedido.', 402);
 
   // Quem fala com a Mureka e a fila, nao esta rota. Assim o cliente nunca
   // recebe "ha outra musica sendo gerada": ele entra na fila, e a espera

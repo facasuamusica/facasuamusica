@@ -162,14 +162,14 @@
         <div class="acoes" style="margin-top:20px">
           <button class="btn btn--primary btn--lg" id="btMusica">Criar minha música</button>
         </div>
-        <p class="mini" style="margin-top:10px">Consome 1 crédito. A música leva alguns minutos para ficar pronta.</p>
+        <p class="mini" style="margin-top:10px">A música leva alguns minutos para ficar pronta.</p>
         <div class="aviso" id="avisoMusica"></div>
       </div>
     </section>
 
     <section class="bloco" id="semCredito" hidden>
-      <h2>Seus créditos acabaram</h2>
-      <p class="sub">Todas as músicas deste pedido já foram criadas. Para fazer outra,
+      <h2>Você criou todas as suas músicas</h2>
+      <p class="sub">Este pedido foi inteiro usado. Para fazer outra música,
         <a href="/site/#precos" style="color:var(--brand);font-weight:700">compre um novo pacote</a>.</p>
     </section>
 
@@ -264,7 +264,7 @@
     na_fila: ['Na fila', 'espera'],
     gerando: ['Compondo…', 'espera'],
     pronta:  ['Pronta', 'ok'],
-    falhou:  ['Crédito devolvido', 'erro']
+    falhou:  ['Pode refazer', 'erro']
   };
 
   function desenharMusicas(musicas) {
@@ -328,8 +328,8 @@
       if (m.status === 'falhou') {
         var e = document.createElement('p');
         e.className = 'mini';
-        e.textContent = 'A composição não saiu desta vez, e devolvemos o seu crédito — '
-          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada.';
+        e.textContent = 'A composição não saiu desta vez, e esta música não foi descontada '
+          + 'do seu pedido. Pode criar outra agora, sem pagar nada.';
         div.appendChild(e);
       }
 
@@ -350,8 +350,8 @@
 
     if (pago) {
       $('resumo').textContent = p.creditosRestantes === 1
-        ? 'Você tem 1 crédito para usar.'
-        : 'Você tem ' + p.creditosRestantes + ' créditos para usar.';
+        ? 'Você ainda pode criar 1 música.'
+        : 'Você ainda pode criar ' + p.creditosRestantes + ' músicas.';
     } else {
       $('resumo').textContent = 'Pedido de ' + p.creditos + (p.creditos === 1 ? ' música' : ' músicas') + '.';
     }

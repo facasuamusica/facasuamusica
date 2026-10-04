@@ -609,3 +609,5 @@ body.is-locked { overflow: hidden; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+.plan__note { margin-top: 6px; font-size: 13px; color: var(--brand-2); font-weight: 600; }
