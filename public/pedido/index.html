@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu pedido — Faça Sua Música</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Acompanhe seu pedido e crie suas músicas personalizadas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+  .pg { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  .topo { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 36px; }
+  .topo a { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; }
+  .topo .marca { width: 30px; height: 30px; border-radius: 9px; background: var(--grad); }
+
+  .bloco { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+           padding: 24px; margin-bottom: 20px; }
+  .bloco--destaque { background: var(--grad-soft); border-color: rgba(255,93,143,.35); }
+
+  h1 { font-family: var(--font-display); font-size: clamp(26px, 5vw, 34px); margin-bottom: 8px; }
+  h2 { font-size: 18px; margin-bottom: 8px; }
+  .sub { color: var(--text-soft); font-size: 15px; }
+  .mini { color: var(--text-dim); font-size: 13.5px; }
+
+  .selo { display: inline-flex; align-items: center; gap: 7px; padding: 5px 13px; border-radius: 999px;
+          font-size: 13px; font-weight: 700; border: 1px solid var(--line); background: var(--surface-2); }
+  .selo__ponto { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); }
+  .selo--ok     .selo__ponto { background: #4ade80; }
+  .selo--espera .selo__ponto { background: var(--brand-2); animation: pulsa 1.4s infinite; }
+  .selo--erro   .selo__ponto { background: #f87171; }
+  @keyframes pulsa { 50% { opacity: .25; } }
+
+  .acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+  .musica { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 12px;
+            background: var(--surface-2); }
+  .musica__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+                  flex-wrap: wrap; margin-bottom: 10px; }
+  .musica__nome { font-weight: 700; font-size: 16px; }
+  .musica audio { width: 100%; margin-top: 12px; }
+
+  .aviso { margin-top: 14px; padding: 12px 15px; border-radius: var(--radius-sm); font-size: 14.5px;
+           border: 1px solid var(--line); background: var(--surface-2); }
+  .aviso--erro { border-color: rgba(248,113,113,.45); color: #fca5a5; }
+  .aviso--ok   { border-color: rgba(74,222,128,.4);  color: #86efac; }
+  .aviso:empty { display: none; }
+
+  .passo { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--text-dim);
+           font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .passo__n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+              background: var(--grad); color: #2a0d18; font-size: 12px; }
+
+  .dupla { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 560px) { .dupla { grid-template-columns: 1fr; } }
+
+  .sugestoes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+  .sugestao { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line);
+              background: var(--surface-2); font-size: 13px; color: var(--text-soft); }
+  .sugestao:hover { border-color: var(--brand); color: var(--text); }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="pg">
+
+  <header class="topo">
+    <a href="/site/"><span class="marca"></span><span>Faça Sua Música</span></a>
+  </header>
+
+  <p id="carregando" class="sub">Carregando seu pedido…</p>
+
+  <div id="falha" class="bloco" hidden>
+    <h2>Não encontramos este pedido</h2>
+    <p class="sub" id="falhaTexto">Confira se o link veio completo, sem faltar nenhum caractere no final.</p>
+  </div>
+
+  <div id="conteudo" hidden>
+
+    <h1 id="saudacao"></h1>
+    <p class="sub" id="resumo"></p>
+
+    <!-- Guardar o link: o id do pedido e a unica chave de acesso que existe. -->
+    <section class="bloco bloco--destaque" style="margin-top:26px">
+      <h2>Guarde este link</h2>
+      <p class="sub">É o endereço do seu pedido — não há senha nem login. Mande para você mesma pelo WhatsApp
+        ou salve onde preferir, para voltar quando quiser.</p>
+      <div class="acoes">
+        <button class="btn btn--primary" id="btGuardar">Salvar meu link</button>
+        <button class="btn btn--ghost" id="btCopiar">Copiar endereço</button>
+      </div>
+      <div class="aviso" id="avisoGuardar"></div>
+    </section>
+
+    <!-- Pagamento ainda nao confirmado -->
+    <section class="bloco" id="aguardando" hidden>
+      <h2>Aguardando a confirmação do pagamento</h2>
+      <p class="sub">Pix costuma cair em segundos; boleto pode levar até dois dias úteis.
+        Esta página se atualiza sozinha — pode deixá-la aberta.</p>
+    </section>
+
+    <!-- Musicas do pedido -->
+    <section id="secaoMusicas" hidden>
+      <h2 style="margin-bottom:14px">Suas músicas</h2>
+      <div id="listaMusicas"></div>
+    </section>
+
+    <!-- Criar uma musica nova -->
+    <section class="bloco" id="criar" hidden>
+      <div class="passo"><span class="passo__n">1</span><span>Conte a história</span></div>
+
+      <label class="field">
+        <span class="field__label">Para quem é, e o que essa pessoa tem de especial?</span>
+        <textarea id="briefing" rows="5" maxlength="1500"
+          placeholder="Ex.: para minha mãe, Dona Marli, 70 anos, que faz bolo de fubá e canta no coral da igreja. Criou três filhos sozinha e nunca reclamou."></textarea>
+      </label>
+      <p class="mini">Quanto mais detalhe — nomes, apelidos, manias, uma história que só vocês sabem —
+        mais a letra vai parecer escrita à mão.</p>
+
+      <div class="acoes">
+        <button class="btn btn--primary" id="btLetra">Escrever a letra</button>
+        <button class="btn btn--ghost" id="btPular">Eu já tenho a letra</button>
+      </div>
+      <div class="aviso" id="avisoLetra"></div>
+
+      <div id="blocoLetra" hidden style="margin-top:26px">
+        <div class="passo"><span class="passo__n">2</span><span>Ajuste a letra</span></div>
+
+        <label class="field">
+          <span class="field__label">Título</span>
+          <input id="titulo" maxlength="120" placeholder="O título da música">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Letra — pode editar à vontade</span>
+          <textarea id="letra" rows="14" maxlength="5000" placeholder="[Verse]&#10;…"></textarea>
+        </label>
+
+        <div class="passo" style="margin-top:22px"><span class="passo__n">3</span><span>Escolha o som</span></div>
+
+        <div class="dupla">
+          <label class="field">
+            <span class="field__label">Estilo</span>
+            <input id="estilo" maxlength="300" value="brazilian mpb, acoustic guitar, warm, emotional">
+          </label>
+          <label class="field">
+            <span class="field__label">Voz</span>
+            <select id="voz">
+              <option value="">Deixar a IA escolher</option>
+              <option value="female">Feminina</option>
+              <option value="male">Masculina</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="sugestoes" id="sugestoes"></div>
+
+        <div class="acoes" style="margin-top:20px">
+          <button class="btn btn--primary btn--lg" id="btMusica">Criar minha música</button>
+        </div>
+        <p class="mini" style="margin-top:10px">Consome 1 crédito. A música leva alguns minutos para ficar pronta.</p>
+        <div class="aviso" id="avisoMusica"></div>
+      </div>
+    </section>
+
+    <section class="bloco" id="semCredito" hidden>
+      <h2>Seus créditos acabaram</h2>
+      <p class="sub">Todas as músicas deste pedido já foram criadas. Para fazer outra,
+        <a href="/site/#precos" style="color:var(--brand);font-weight:700">compre um novo pacote</a>.</p>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  // O id do pedido vem da propria URL: ele e a credencial.
+  var pedidoId = (location.pathname.match(/\/pedido\/([0-9a-f]{32})/) || [])[1] || '';
+  var timer = null;
+
+  function aviso(el, texto, tipo) {
+    var e = $(el);
+    e.textContent = texto || '';
+    e.className = 'aviso' + (tipo ? ' aviso--' + tipo : '');
+  }
+
+  function ocupado(botao, sim, textoOcupado) {
+    var b = $(botao);
+    if (sim) {
+      b.dataset.antes = b.textContent;
+      b.textContent = textoOcupado;
+      b.disabled = true;
+    } else {
+      b.textContent = b.dataset.antes || b.textContent;
+      b.disabled = false;
+    }
+  }
+
+  async function api(caminho, opcoes) {
+    var r = await fetch(caminho, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opcoes || {}));
+    var dados = {};
+    try { dados = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(dados.error || 'Algo deu errado. Tente de novo em instantes.');
+    return dados;
+  }
+
+  /* ---------- guardar o link ---------- */
+
+  var TEXTO_LINK = 'Aqui está o link da minha música na Faça Sua Música:';
+
+  $('btGuardar').addEventListener('click', async function () {
+    var url = location.href;
+    // No celular o compartilhamento nativo abre WhatsApp, notas, e-mail, o que a pessoa preferir.
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Meu pedido — Faça Sua Música', text: TEXTO_LINK, url: url });
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // a pessoa fechou a bandeja
+      }
+    }
+    // Sem compartilhamento nativo (desktop), o WhatsApp Web resolve.
+    window.open('https://wa.me/?text=' + encodeURIComponent(TEXTO_LINK + ' ' + url), '_blank', 'noopener');
+  });
+
+  $('btCopiar').addEventListener('click', async function () {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      aviso('avisoGuardar', 'Endereço copiado. Cole onde quiser guardar.', 'ok');
+    } catch (e) {
+      aviso('avisoGuardar', 'Não consegui copiar sozinha — selecione o endereço na barra do navegador.', 'erro');
+    }
+  });
+
+  /* ---------- desenhar a pagina ---------- */
+
+  var ROTULOS = {
+    na_fila: ['Na fila', ''],
+    gerando: ['Compondo…', 'espera'],
+    pronta:  ['Pronta', 'ok'],
+    falhou:  ['Não deu certo', 'erro']
+  };
+
+  function desenharMusicas(musicas) {
+    var lista = $('listaMusicas');
+    lista.innerHTML = '';
+
+    if (!musicas.length) {
+      $('secaoMusicas').hidden = true;
+      return;
+    }
+    $('secaoMusicas').hidden = false;
+
+    musicas.forEach(function (m) {
+      var rot = ROTULOS[m.status] || ['', ''];
+      var div = document.createElement('div');
+      div.className = 'musica';
+
+      var topo = document.createElement('div');
+      topo.className = 'musica__topo';
+
+      var nome = document.createElement('span');
+      nome.className = 'musica__nome';
+      nome.textContent = m.titulo || 'Sem título';
+
+      var selo = document.createElement('span');
+      selo.className = 'selo' + (rot[1] ? ' selo--' + rot[1] : '');
+      selo.innerHTML = '<span class="selo__ponto"></span>';
+      selo.appendChild(document.createTextNode(rot[0]));
+
+      topo.appendChild(nome);
+      topo.appendChild(selo);
+      div.appendChild(topo);
+
+      if (m.status === 'gerando' || m.status === 'na_fila') {
+        var p = document.createElement('p');
+        p.className = 'mini';
+        p.textContent = 'Leva alguns minutos. Pode fechar a página — o link guardado te traz de volta.';
+        div.appendChild(p);
+      }
+
+      if (m.status === 'pronta' && m.audio) {
+        var audio = document.createElement('audio');
+        audio.controls = true;
+        audio.preload = 'none';
+        audio.src = m.audio;
+        div.appendChild(audio);
+
+        var baixar = document.createElement('a');
+        baixar.className = 'btn btn--ghost btn--sm';
+        baixar.style.marginTop = '12px';
+        baixar.href = m.audio;
+        baixar.download = (m.titulo || 'minha-musica') + '.mp3';
+        baixar.textContent = 'Baixar';
+        div.appendChild(baixar);
+      }
+
+      if (m.status === 'falhou') {
+        var e = document.createElement('p');
+        e.className = 'mini';
+        e.textContent = m.erro || 'Não conseguimos gerar esta música. Fale com a gente que resolvemos.';
+        div.appendChild(e);
+      }
+
+      lista.appendChild(div);
+    });
+  }
+
+  function desenhar(p) {
+    $('carregando').hidden = true;
+    $('conteudo').hidden = false;
+
+    var primeiroNome = (p.nome || '').split(' ')[0];
+    $('saudacao').textContent = primeiroNome ? ('Olá, ' + primeiroNome) : 'Seu pedido';
+
+    var pago = p.status === 'pago';
+    $('aguardando').hidden = pago;
+
+    if (pago) {
+      $('resumo').textContent = p.creditosRestantes === 1
+        ? 'Você tem 1 crédito para usar.'
+        : 'Você tem ' + p.creditosRestantes + ' créditos para usar.';
+    } else {
+      $('resumo').textContent = 'Pedido de ' + p.creditos + (p.creditos === 1 ? ' música' : ' músicas') + '.';
+    }
+
+    desenharMusicas(p.musicas);
+
+    var temCredito = pago && p.creditosRestantes > 0;
+    $('criar').hidden = !temCredito;
+    $('semCredito').hidden = !(pago && p.creditosRestantes === 0);
+  }
+
+  /* ---------- atualizar sozinho ---------- */
+
+  function precisaAtualizar(p) {
+    if (!p) return false;
+    if (p.status === 'pendente') return true;
+    return p.musicas.some(function (m) { return m.status === 'gerando' || m.status === 'na_fila'; });
+  }
+
+  async function carregar() {
+    var p = await api('/api/pedido/' + pedidoId);
+    desenhar(p);
+
+    clearTimeout(timer);
+    // Consultar o pedido tambem sincroniza o andamento na Mureka, do lado do servidor.
+    if (precisaAtualizar(p)) timer = setTimeout(function () { carregar().catch(function () {}); }, 8000);
+  }
+
+  /* ---------- gerar ---------- */
+
+  var SUGESTOES = ['sertanejo romântico', 'MPB acústico', 'pop alegre', 'samba leve',
+                   'rock suave', 'forró animado', 'bossa nova', 'gospel emotivo'];
+
+  SUGESTOES.forEach(function (s) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sugestao';
+    b.textContent = s;
+    b.addEventListener('click', function () { $('estilo').value = s; });
+    $('sugestoes').appendChild(b);
+  });
+
+  $('btPular').addEventListener('click', function () {
+    $('blocoLetra').hidden = false;
+    $('letra').focus();
+  });
+
+  $('btLetra').addEventListener('click', async function () {
+    var briefing = $('briefing').value.trim();
+    if (!briefing) { aviso('avisoLetra', 'Conte um pouco da história antes.', 'erro'); return; }
+
+    aviso('avisoLetra', '');
+    ocupado('btLetra', true, 'Escrevendo…');
+    try {
+      var r = await api('/api/pedido/' + pedidoId + '/letra', {
+        method: 'POST', body: JSON.stringify({ briefing: briefing })
+      });
+      $('titulo').value = r.titulo || '';
+      $('letra').value = r.letra || '';
+      $('blocoLetra').hidden = false;
+      aviso('avisoLetra', 'Pronto. Leia com calma e mude o que quiser — ainda não gastou crédito.', 'ok');
+      $('blocoLetra').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      aviso('avisoLetra', e.message, 'erro');
+    } finally {
+      ocupado('btLetra', false);
+    }
+  });
+
+  $('btMusica').addEventListener('click', async function () {
+    var letra = $('letra').value.trim();
+    if (!letra) { aviso('avisoMusica', 'A letra não pode ficar vazia.', 'erro'); return; }
+
+    aviso('avisoMusica', '');
+    ocupado('btMusica', true, 'Enviando…');
+    try {
+      await api('/api/pedido/' + pedidoId + '/musica', {
+        method: 'POST',
+        body: JSON.stringify({
+          letra: letra,
+          titulo: $('titulo').value.trim(),
+          estilo: $('estilo').value.trim(),
+          voz: $('voz').value,
+          briefing: $('briefing').value.trim()
+        })
+      });
+      $('briefing').value = '';
+      $('titulo').value = '';
+      $('letra').value = '';
+      $('blocoLetra').hidden = true;
+      aviso('avisoLetra', '');
+      await carregar();
+      $('secaoMusicas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      aviso('avisoMusica', e.message, 'erro');
+    } finally {
+      ocupado('btMusica', false);
+    }
+  });
+
+  /* ---------- inicio ---------- */
+
+  if (!pedidoId) {
+    $('carregando').hidden = true;
+    $('falha').hidden = false;
+  } else {
+    carregar().catch(function (e) {
+      $('carregando').hidden = true;
+      $('falha').hidden = false;
+      $('falhaTexto').textContent = e.message;
+    });
+  }
+})();
+</script>
+</body>
+</html>

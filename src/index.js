@@ -348,6 +348,15 @@ export default {
       }
     }
 
+    // A area do cliente e uma pagina so, servida para qualquer id de pedido:
+    // o id vive na URL e quem o le e o navegador. Sem isso, o cliente que
+    // acabou de pagar cairia num 404 ao voltar do Mercado Pago.
+    if (/^\/pedido\/[0-9a-f]{32}\/?$/.test(url.pathname)) {
+      // Busca a pasta, nao o index.html: o Assets redireciona o caminho
+      // explicito e o cliente receberia o 307 em vez da pagina.
+      return env.ASSETS.fetch(new Request(new URL('/pedido/', url), request));
+    }
+
     return env.ASSETS.fetch(request);
   }
 };
