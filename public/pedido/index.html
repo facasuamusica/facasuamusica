@@ -322,19 +322,15 @@
       }
 
       // O cliente nunca fica no prejuizo: a fila tenta tres vezes e, se
-      // desistir, devolve o credito antes de mostrar isto. Quem preferir o
-      // dinheiro de volta fala no WhatsApp e o estorno sai pelo Mercado Pago.
+      // desistir, devolve o credito antes de mostrar isto. Aqui a saida
+      // oferecida e tentar de novo — quem quiser desistir procura o fale
+      // conosco do rodape, que e onde todo mundo ja sabe procurar.
       if (m.status === 'falhou') {
         var e = document.createElement('p');
         e.className = 'mini';
         e.textContent = 'A composição não saiu desta vez, e devolvemos o seu crédito — '
-          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada, '
-          + 'ou falar com a gente se preferir o dinheiro de volta.';
+          + 'ele já está disponível aqui em cima. Pode tentar de novo sem pagar nada.';
         div.appendChild(e);
-
-        var fale = botaoSuporte('Falar com a gente',
-          'Oi! Minha música não ficou pronta e eu queria resolver. Pedido ' + pedidoId);
-        if (fale) div.appendChild(fale);
       }
 
       lista.appendChild(div);

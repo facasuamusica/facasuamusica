@@ -319,6 +319,15 @@ async function rotearApi(request, env, url) {
     return receberWebhook(request, env);
   }
 
+  // Ficha tecnica do site: um lugar so para o contato, para o numero mudar
+  // sem publicar o site de novo.
+  if (rota === '/api/contato' && metodo === 'GET') {
+    return Response.json({
+      whatsapp: env.WHATSAPP_SUPORTE || null,
+      email: env.EMAIL_CONTATO || null
+    });
+  }
+
   if (rota === '/api/pacotes' && metodo === 'GET') {
     return Response.json(
       Object.entries(PACOTES).map(([id, p]) => ({ id, creditos: p.creditos, valorCentavos: p.valorCentavos }))

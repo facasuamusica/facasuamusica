@@ -213,6 +213,29 @@
     sticky.classList.toggle('is-visible', show);
   }
 
+
+  /* ---------- ficha técnica: contato do rodapé ---------- */
+
+  // O link some em vez de apontar para lugar nenhum enquanto o número não
+  // estiver configurado — "fale conosco" quebrado é pior que ausente.
+  fetch("/api/contato")
+    .then(function (r) { return r.json(); })
+    .then(function (c) {
+      $("[data-contato-whatsapp]").forEach(function (a) {
+        if (!c.whatsapp) return;
+        a.href = "https://wa.me/" + c.whatsapp;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.hidden = false;
+      });
+      $("[data-contato-email]").forEach(function (a) {
+        if (!c.email) return;
+        a.href = "mailto:" + c.email;
+        a.textContent = c.email;
+      });
+    })
+    .catch(function () {});
+
   /* ---------- checkout ---------- */
 
   var PACOTE_DO_PLANO = { essencial: 'p1', especial: 'p3', eterno: 'p7' };
