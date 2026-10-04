@@ -756,7 +756,7 @@
     <header class="modal__head">
       <div class="modal__head-text">
         <p class="modal__step" id="checkoutPacote">—</p>
-        <h2 id="checkoutTitulo">Para onde mandamos sua música?</h2>
+        <h2 id="checkoutTitulo">Para onde mandamos a sua música?</h2>
       </div>
       <button class="modal__close" type="button" data-fechar-checkout aria-label="Fechar">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -764,29 +764,24 @@
     </header>
 
     <form class="modal__body" id="checkoutForm" novalidate>
-      <p class="step-panel__hint">Só precisamos disso para te enviar o link da sua música.
-        A história que vira letra você conta depois do pagamento.</p>
-
       <label class="field">
-        <span class="field__label">Nome completo *</span>
-        <input type="text" name="nome" autocomplete="name" maxlength="120" required
-               placeholder="Como está no seu documento">
+        <span class="field__label">Nome completo</span>
+        <input type="text" name="nome" autocomplete="name" maxlength="120" required>
       </label>
 
       <label class="field">
-        <span class="field__label">WhatsApp *</span>
+        <span class="field__label">WhatsApp</span>
         <!-- inputmode "tel", não "numeric": o teclado numérico do celular não
-             tem o "+", e quem mora fora do Brasil precisa dele. -->
+             tem o "+", e quem mora fora do Brasil precisa dele. O placeholder
+             mostra os dois formatos sem precisar de uma linha de explicação. -->
         <input type="tel" name="whatsapp" autocomplete="tel" inputmode="tel" maxlength="24" required
-               placeholder="(11) 91234-5678">
-        <span class="field__counter">Fora do Brasil? Comece com + e o código do país, como +351 912 345 678.</span>
+               placeholder="(11) 91234-5678  ou  +351 912 345 678">
         <span class="field__error" data-erro="whatsapp"></span>
       </label>
 
       <label class="field">
-        <span class="field__label">E-mail *</span>
-        <input type="email" name="email" autocomplete="email" maxlength="160" required
-               placeholder="voce@exemplo.com">
+        <span class="field__label">E-mail</span>
+        <input type="email" name="email" autocomplete="email" maxlength="160" required>
         <span class="field__error" data-erro="email"></span>
       </label>
 
